@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PikYak</string>
+    <string name="title_conversation_detail">Conversation Detail</string>
+
+    <string name="action_refresh">Refresh</string>
+    <string name="action_add">New</string>
+
+    <string name="action_sort">Sort</string>
+    <string name="action_sort_new">Newest</string>
+    <string name="action_sort_top">Best</string>
+
+    <string name="action_settings">Settings</string>
+
+</resources>
