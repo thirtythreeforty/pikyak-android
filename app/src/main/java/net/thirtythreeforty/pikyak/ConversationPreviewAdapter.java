@@ -6,35 +6,59 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import net.thirtythreeforty.pikyak.networking.PikyakServerAPI;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel.ConversationPreviewModel;
 
+import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreviewModel> {
     final LayoutInflater mInflater;
+    final PikyakServerAPI mPikyakServerAPI;
 
-    // Not sure which of these constructors will be useful at this point.
-    ConversationPreviewAdapter(Context context, ConversationListModel conversationList) {
-        super(context, R.layout.image_item, conversationList.conversations);
+    ConversationPreviewAdapter(Context context, PikyakServerAPI pikyakServerAPI) {
+        super(context, R.layout.image_item, new ArrayList<ConversationPreviewModel>());
+
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-    ConversationPreviewAdapter(Context context) {
-        this(context, new ConversationListModel());
+        mPikyakServerAPI = pikyakServerAPI;
+
+        // Dummies for testing
         ConversationPreviewModel conversationPreview = new ConversationPreviewModel();
         conversationPreview.url = "http://www.google.com/images/srpr/logo11w.png";
         add(conversationPreview);
+        conversationPreview = new ConversationPreviewModel();
+        conversationPreview.url = "http://funnycat-pictures.com/wp-content/uploads/2014/10/funny-cat-photos.jpg";
+        add(conversationPreview);
     }
 
-    public void replaceConversationListModel(ConversationListModel conversationList) {
-        clear();
-        addConversationListModel(conversationList);
-    }
+    public void reloadConversationList() {
+        mPikyakServerAPI.getConversationList(
+                0,
+                PikyakServerAPI.SORT_METHOD_HOT,
+                "",
+                new Callback<ConversationListModel>() {
+                    @Override
+                    public void success(ConversationListModel conversationList, Response response) {
+                        replaceConversationList(conversationList);
+                    }
 
-    public void addConversationListModel(ConversationListModel conversationList) {
-        addAll(conversationList.conversations);
-        notifyDataSetChanged();
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(
+                                getContext(),
+                                "Downloading the conversation list failed! Why: " + error.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
     }
 
     @Override
@@ -57,5 +81,15 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
                 .into(image);
 
         return view;
+    }
+
+    private void replaceConversationList(ConversationListModel conversationList) {
+        clear();
+        addConversationList(conversationList);
+    }
+
+    private void addConversationList(ConversationListModel conversationList) {
+        addAll(conversationList.conversations);
+        notifyDataSetChanged();
     }
 }
