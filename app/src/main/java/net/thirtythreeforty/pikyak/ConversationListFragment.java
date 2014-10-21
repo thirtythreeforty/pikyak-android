@@ -4,9 +4,17 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import net.thirtythreeforty.pikyak.dummy.DummyContent;
+import net.thirtythreeforty.pikyak.networking.PikyakServerAPI;
+import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -58,6 +66,8 @@ public class ConversationListFragment extends ListFragment {
         }
     };
 
+    ListAdapter mAdapter;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -69,8 +79,9 @@ public class ConversationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
         setListAdapter(new ConversationPreviewAdapter(getActivity()));
+
+        reloadConversationList();
     }
 
     @Override
@@ -120,6 +131,34 @@ public class ConversationListFragment extends ListFragment {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
+    }
+
+    public void reloadConversationList() {
+        PikyakApplication application = (PikyakApplication)getActivity().getApplication();
+        PikyakServerAPI pikyakServerAPI = application.getPikyakService();
+
+        // TODO it would be nice to have a callback in the Activity that we could notify of
+        // success or failure.
+        pikyakServerAPI.getConversationList(
+                0,
+                PikyakServerAPI.SORT_METHOD_HOT,
+                "",
+                new Callback<ConversationListModel>() {
+                    @Override
+                    public void success(ConversationListModel conversationList, Response response) {
+                        ConversationPreviewAdapter adapter = (ConversationPreviewAdapter)getListAdapter();
+                        adapter.replaceConversationListModel(conversationList);
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(
+                                getActivity(),
+                                "Downloading the conversation list failed! Why: " + error.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+        });
     }
 
     /**

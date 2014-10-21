@@ -22,6 +22,19 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
     }
     ConversationPreviewAdapter(Context context) {
         this(context, new ConversationListModel());
+        ConversationPreviewModel conversationPreview = new ConversationPreviewModel();
+        conversationPreview.url = "http://www.google.com/images/srpr/logo11w.png";
+        add(conversationPreview);
+    }
+
+    public void replaceConversationListModel(ConversationListModel conversationList) {
+        clear();
+        addConversationListModel(conversationList);
+    }
+
+    public void addConversationListModel(ConversationListModel conversationList) {
+        addAll(conversationList.conversations);
+        notifyDataSetChanged();
     }
 
     @Override
