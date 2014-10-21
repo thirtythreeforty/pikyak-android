@@ -35,6 +35,7 @@ public class ConversationListActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((PikyakApplication)getApplication()).getPikyakService();
         setContentView(R.layout.activity_conversation_list);
 
         if (findViewById(R.id.conversation_detail_container) != null) {
