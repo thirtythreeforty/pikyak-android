@@ -1,6 +1,7 @@
 package net.thirtythreeforty.pikyak;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreviewModel> {
+    static final String TAG = "ConversationPreviewAdapter";
+
     final LayoutInflater mInflater;
     final PikyakServerAPI mPikyakServerAPI;
 
@@ -57,6 +60,7 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
                                 "Downloading the conversation list failed! Why: " + error.getMessage(),
                                 Toast.LENGTH_SHORT
                         ).show();
+                        Log.e(TAG, "Download failed!", error.getCause());
                     }
                 });
     }

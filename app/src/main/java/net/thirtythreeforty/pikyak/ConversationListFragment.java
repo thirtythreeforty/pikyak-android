@@ -75,6 +75,7 @@ public class ConversationListFragment extends ListFragment {
 
         PikyakServerAPI api = ((PikyakApplication)getActivity().getApplication()).getPikyakService();
         setListAdapter(new ConversationPreviewAdapter(getActivity(), api));
+
         reloadConversationList();
     }
 
