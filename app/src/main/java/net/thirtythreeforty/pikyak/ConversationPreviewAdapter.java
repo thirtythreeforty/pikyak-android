@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -69,22 +68,21 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+        VotableImage view;
 
-        if(view == null) {
-            view = mInflater.inflate(R.layout.image_item, parent, false);
+        if(convertView instanceof VotableImage) {
+            view = (VotableImage)convertView;
+        } else {
+            view = new VotableImage(getContext());
         }
 
-        // https://github.com/MeetMe/TwitchTvClient uses Holders here for speed... Consider this if
-        // this section is slow.  Doubt it frankly.
-
         ConversationPreviewModel conversationPreview = getItem(position);
+        view.setScore(position);
 
-        ImageView image = (ImageView)view.findViewById(R.id.image);
         Picasso.with(getContext())
                 .load(conversationPreview.url)
                 .error(R.drawable.ic_action_refresh)
-                .into(image);
+                .into(view.getImage());
 
         return view;
     }
