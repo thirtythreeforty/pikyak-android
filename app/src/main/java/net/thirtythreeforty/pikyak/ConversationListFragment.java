@@ -8,7 +8,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import net.thirtythreeforty.pikyak.dummy.DummyContent;
-import net.thirtythreeforty.pikyak.networking.PikyakServerAPI;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -73,8 +72,7 @@ public class ConversationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PikyakServerAPI api = ((PikyakApplication)getActivity().getApplication()).getPikyakService();
-        setListAdapter(new ConversationPreviewAdapter(getActivity(), api));
+        setListAdapter(new ConversationPreviewAdapter(getActivity()));
 
         reloadConversationList();
     }

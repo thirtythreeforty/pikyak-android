@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import net.thirtythreeforty.pikyak.networking.PikyakAPIFactory;
 import net.thirtythreeforty.pikyak.networking.PikyakServerAPI;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel.ConversationPreviewModel;
@@ -25,13 +26,11 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
     static final String TAG = "ConversationPreviewAdapter";
 
     final LayoutInflater mInflater;
-    final PikyakServerAPI mPikyakServerAPI;
 
-    ConversationPreviewAdapter(Context context, PikyakServerAPI pikyakServerAPI) {
+    ConversationPreviewAdapter(Context context) {
         super(context, R.layout.image_item, new ArrayList<ConversationPreviewModel>());
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPikyakServerAPI = pikyakServerAPI;
 
         // Dummies for testing
         ConversationPreviewModel conversationPreview = new ConversationPreviewModel();
@@ -40,10 +39,13 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
         conversationPreview = new ConversationPreviewModel();
         conversationPreview.url = "http://funnycat-pictures.com/wp-content/uploads/2014/10/funny-cat-photos.jpg";
         add(conversationPreview);
+
+        // Again, for testing.
+        Picasso.with(getContext()).setIndicatorsEnabled(true);
     }
 
     public void reloadConversationList() {
-        mPikyakServerAPI.getConversationList(
+        PikyakAPIFactory.getAPI().getConversationList(
                 0,
                 PikyakServerAPI.SORT_METHOD_HOT,
                 "",
