@@ -15,8 +15,22 @@ public class VotableImage extends FrameLayout implements OnClickListener {
     private final Button mUpvoteButton;
     private final Button mDownvoteButton;
     private final ImageView mImage;
+    private Callbacks mCallbacks;
 
-    public VotableImage(Context context) {
+    public static interface Callbacks {
+        void onUpvote(VotableImage view);
+        void onDownvote(VotableImage view);
+    }
+
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onUpvote(VotableImage view) {}
+
+        @Override
+        public void onDownvote(VotableImage view) {}
+    };
+
+    public VotableImage(Context context, Callbacks callbacks) {
         super(context);
 
         LayoutInflater inflater = (LayoutInflater) context
@@ -30,6 +44,12 @@ public class VotableImage extends FrameLayout implements OnClickListener {
 
         mUpvoteButton.setOnClickListener(this);
         mDownvoteButton.setOnClickListener(this);
+
+        mCallbacks = callbacks;
+    }
+
+    public VotableImage(Context context) {
+        this(context, sDummyCallbacks);
     }
 
     public ImageView getImage() {
@@ -43,9 +63,9 @@ public class VotableImage extends FrameLayout implements OnClickListener {
     @Override
     public void onClick(View v) {
         if(v == mUpvoteButton) {
-            // TODO
+            mCallbacks.onUpvote(this);
         } else if(v == mDownvoteButton) {
-            // TODO
+            mCallbacks.onDownvote(this);
         }
     }
 }

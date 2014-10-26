@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import net.thirtythreeforty.pikyak.dummy.DummyContent;
+import net.thirtythreeforty.pikyak.networking.model.ConversationListModel.ConversationPreviewModel;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -114,7 +114,7 @@ public class ConversationListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(((ConversationPreviewModel)listView.getAdapter().getItem(position)).url);
     }
 
     @Override
