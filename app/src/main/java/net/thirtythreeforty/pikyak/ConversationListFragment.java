@@ -89,7 +89,6 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
         mListView = (ListView)view.findViewById(R.id.listView);
         mListView.setAdapter(new ConversationListAdapter(getActivity()));
         mListView.setOnItemClickListener(this);
-        reloadConversationList();
     }
 
     @Override
@@ -110,6 +109,14 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        reloadConversationList();
     }
 
     @Override

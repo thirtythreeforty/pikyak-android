@@ -69,7 +69,6 @@ public class ConversationDetailFragment extends Fragment {
                 getActivity(),
                 getArguments().getInt(ARG_CONVERSATION_ID)));
         // TODO open fullscreen image when touched?
-        reloadConversation();
     }
 
     @Override
@@ -90,6 +89,13 @@ public class ConversationDetailFragment extends Fragment {
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        reloadConversation();
     }
 
     public void reloadConversation() {
