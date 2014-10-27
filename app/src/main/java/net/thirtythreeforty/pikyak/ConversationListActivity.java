@@ -25,7 +25,7 @@ import android.view.MenuItem;
  * to listen for item selections.
  */
 public class ConversationListActivity extends Activity
-        implements ConversationListFragment.Callbacks {
+        implements ConversationListFragment.Callbacks, ConversationDetailFragment.Callbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
