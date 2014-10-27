@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import net.thirtythreeforty.pikyak.networking.model.ConversationListModel.ConversationPreviewModel;
+import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -123,8 +123,8 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ConversationPreviewModel convPreview
-                = (ConversationPreviewModel)parent.getAdapter().getItem(position);
+        ImageModel convPreview
+                = (ImageModel)parent.getAdapter().getItem(position);
         mCallbacks.onItemSelected(convPreview.id);
     }
 
@@ -141,7 +141,7 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
     }
 
     public void reloadConversationList() {
-        ((ConversationListAdapter)mListView.getAdapter()).reloadConversationList();
+        ((ConversationListAdapter)mListView.getAdapter()).reload();
     }
 
     private void setActivatedPosition(int position) {

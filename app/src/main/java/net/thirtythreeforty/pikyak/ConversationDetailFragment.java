@@ -90,6 +90,6 @@ public class ConversationDetailFragment extends Fragment {
     }
 
     public void reloadConversation() {
-        ((ConversationDetailAdapter)mListView.getAdapter()).reloadConversation();
+        ((ConversationDetailAdapter)mListView.getAdapter()).reload();
     }
 }
