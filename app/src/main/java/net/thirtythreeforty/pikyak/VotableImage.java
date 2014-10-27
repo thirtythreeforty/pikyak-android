@@ -9,6 +9,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * A {@link FrameLayout} that provides an image to render into and vote counter.
+ * The embedded {@link ImageView} can be retrieved with the getImage() method.
+ */
 public class VotableImage extends FrameLayout implements OnClickListener {
 
     private final TextView mScoreTextView;

@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 
 import com.squareup.picasso.Transformation;
 
+/**
+ * A Picasso Transformation that resizes an image to a certain width, preserving the aspect ratio.
+ */
 public class KeepRatioTransformation implements Transformation {
     private final int targetWidth;
 

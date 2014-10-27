@@ -5,13 +5,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import net.thirtythreeforty.pikyak.networking.PikyakAPIFactory;
-import net.thirtythreeforty.pikyak.networking.VotableImageAdapter;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+/**
+ * A subclass of {@link VotableImageAdapter} that handles {@link ConversationModel}s.
+ * It must be given a conversationID upon construction.
+ */
 public class ConversationDetailAdapter extends VotableImageAdapter {
     static final String TAG = "ConversationDetailAdapter";
 

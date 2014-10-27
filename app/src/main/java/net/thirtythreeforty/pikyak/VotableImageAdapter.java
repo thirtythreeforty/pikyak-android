@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak.networking;
+package net.thirtythreeforty.pikyak;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,13 +11,13 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import net.thirtythreeforty.pikyak.KeepRatioTransformation;
-import net.thirtythreeforty.pikyak.R;
-import net.thirtythreeforty.pikyak.VotableImage;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
 import java.util.ArrayList;
 
+/**
+ *
+ */
 abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
     static final String TAG = "VotableImageAdapter";
 
