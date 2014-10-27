@@ -5,10 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import net.thirtythreeforty.pikyak.networking.PikyakAPIFactory;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
@@ -21,7 +24,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ConversationDetailAdapter extends ArrayAdapter<PostModel> {
-    static final String TAG = "ConversationPreviewAdapter";
+    static final String TAG = "ConversationDetailAdapter";
 
     final LayoutInflater mInflater;
     final int mConversationID;
@@ -68,23 +71,32 @@ public class ConversationDetailAdapter extends ArrayAdapter<PostModel> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        VotableImage view;
-
-        if(convertView instanceof VotableImage) {
-            view = (VotableImage)convertView;
-        } else {
-            view = new VotableImage(getContext());
-        }
-
-        PostModel post = getItem(position);
+        final VotableImage view = (convertView instanceof VotableImage)
+                ? (VotableImage)convertView
+                : new VotableImage(getContext());
+        final PostModel post = getItem(position);
 
         view.setScore(position); // Testing only, obviously
+
+        // Picasso doesn't like loading an empty image
         if(!post.image.isEmpty()) {
-            // Picasso doesn't like loading an empty image
-            Picasso.with(getContext())
-                    .load(post.image)
-                    .error(R.drawable.ic_action_refresh)
-                    .into(view.getImage());
+            final ImageView imageView = view.getImage();
+            imageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                // Wait until layout to load image, TODO load asynchronously?
+                @Override
+                public void onGlobalLayout() {
+                    // Ensure we call this only once
+                    imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                    Transformation t = new KeepRatioTransformation(imageView.getWidth());
+                    Picasso.with(getContext())
+                            .load(post.image)
+                            .transform(t)
+                            .error(R.drawable.ic_action_refresh)
+                            .into(imageView);
+                }
+            });
+
         }
 
         return view;

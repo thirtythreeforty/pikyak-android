@@ -18,7 +18,7 @@ import android.view.MenuItem;
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link ConversationListFragment} and the item details
- * (if present) is a {@link ConversationDetailFragmentOld}.
+ * (if present) is a {@link ConversationDetailFragment}.
  * <p>
  * This activity also implements the required
  * {@link ConversationListFragment.Callbacks} interface
