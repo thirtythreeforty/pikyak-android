@@ -33,11 +33,11 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
 
         // Dummies for testing
         ConversationPreviewModel conversationPreview = new ConversationPreviewModel();
-        conversationPreview.thumbnail = "http://www.google.com/images/srpr/logo11w.png";
+        conversationPreview.image = "http://www.google.com/images/srpr/logo11w.png";
         conversationPreview.url = "http://dummy/url/1";
         add(conversationPreview);
         conversationPreview = new ConversationPreviewModel();
-        conversationPreview.thumbnail = "http://funnycat-pictures.com/wp-content/uploads/2014/10/funny-cat-photos.jpg";
+        conversationPreview.image = "http://funnycat-pictures.com/wp-content/uploads/2014/10/funny-cat-photos.jpg";
         conversationPreview.url = "http://dummy/url/2";
         add(conversationPreview);
 
@@ -81,10 +81,10 @@ public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreview
         ConversationPreviewModel conversationPreview = getItem(position);
 
         view.setScore(position); // Testing only, obviously
-        if(!conversationPreview.thumbnail.isEmpty()) {
+        if(!conversationPreview.image.isEmpty()) {
             // Picasso doesn't like loading an empty image
             Picasso.with(getContext())
-                    .load(conversationPreview.thumbnail)
+                    .load(conversationPreview.image)
                     .error(R.drawable.ic_action_refresh)
                     .into(view.getImage());
         }

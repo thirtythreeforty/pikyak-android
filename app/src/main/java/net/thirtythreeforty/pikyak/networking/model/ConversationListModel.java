@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConversationListModel {
-    public static class ConversationPreviewModel {
-        public int id = 0;
+    public static class ConversationPreviewModel extends ImageModel {
         public String url = "";
-        public String thumbnail = "";
     }
 
     public List<ConversationPreviewModel> conversations = new ArrayList<>();

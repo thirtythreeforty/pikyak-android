@@ -2,7 +2,6 @@ package net.thirtythreeforty.pikyak.networking;
 
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
-import net.thirtythreeforty.pikyak.networking.model.PostModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
@@ -41,9 +40,4 @@ public interface PikyakServerAPI {
             @Path("conversation_id") int conversation_id,
             @Query("first") int first_post,
             Callback<ConversationModel> callback);
-
-    @GET("/post/{post_id}")
-    public void getPost(
-            @Path("post_id") int post_id,
-            Callback<PostModel> callback);
 }
