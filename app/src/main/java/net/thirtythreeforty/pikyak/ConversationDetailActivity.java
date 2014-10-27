@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import net.thirtythreeforty.pikyak.ConversationDetailFragment.Callbacks;
+
 
 /**
  * An activity representing a single Conversation detail screen. This
@@ -14,7 +16,7 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ConversationDetailFragment}.
  */
-public class ConversationDetailActivity extends Activity {
+public class ConversationDetailActivity extends Activity implements Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +39,8 @@ public class ConversationDetailActivity extends Activity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ConversationDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ConversationDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(ConversationDetailFragment.ARG_CONVERSATION_ID,
+                    getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0));
             ConversationDetailFragment fragment = new ConversationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()

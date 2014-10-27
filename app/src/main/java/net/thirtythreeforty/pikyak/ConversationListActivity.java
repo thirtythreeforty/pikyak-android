@@ -18,7 +18,7 @@ import android.view.MenuItem;
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link ConversationListFragment} and the item details
- * (if present) is a {@link ConversationDetailFragment}.
+ * (if present) is a {@link ConversationDetailFragmentOld}.
  * <p>
  * This activity also implements the required
  * {@link ConversationListFragment.Callbacks} interface
@@ -79,13 +79,13 @@ public class ConversationListActivity extends Activity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String url) {
+    public void onItemSelected(int id) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ConversationDetailFragment.ARG_ITEM_ID, url);
+            arguments.putInt(ConversationDetailFragment.ARG_CONVERSATION_ID, id);
             ConversationDetailFragment fragment = new ConversationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -96,7 +96,7 @@ public class ConversationListActivity extends Activity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ConversationDetailActivity.class);
-            detailIntent.putExtra(ConversationDetailFragment.ARG_ITEM_ID, url);
+            detailIntent.putExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, id);
             startActivity(detailIntent);
         }
     }

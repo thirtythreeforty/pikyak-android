@@ -1,13 +1,16 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListAdapter;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import net.thirtythreeforty.pikyak.networking.model.ImageModel;
+import net.thirtythreeforty.pikyak.networking.model.ConversationListModel.ConversationPreviewModel;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -18,7 +21,7 @@ import net.thirtythreeforty.pikyak.networking.model.ImageModel;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ConversationListFragment extends ListFragment {
+public class ConversationListFragment extends Fragment implements OnItemClickListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -37,6 +40,8 @@ public class ConversationListFragment extends ListFragment {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
+    private ListView mListView;
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -46,7 +51,7 @@ public class ConversationListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        public void onItemSelected(int id);
     }
 
     /**
@@ -55,11 +60,9 @@ public class ConversationListFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(int id) {
         }
     };
-
-    ListAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,12 +72,8 @@ public class ConversationListFragment extends ListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setListAdapter(new ConversationPreviewAdapter(getActivity()));
-
-        reloadConversationList();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_conversation_list, container, false);
     }
 
     @Override
@@ -86,6 +85,11 @@ public class ConversationListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+
+        mListView = (ListView)view.findViewById(R.id.listView);
+        mListView.setAdapter(new ConversationListAdapter(getActivity()));
+        mListView.setOnItemClickListener(this);
+        reloadConversationList();
     }
 
     @Override
@@ -109,21 +113,19 @@ public class ConversationListFragment extends ListFragment {
     }
 
     @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(((ImageModel)listView.getAdapter().getItem(position)).image);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ConversationPreviewModel convPreview
+                = (ConversationPreviewModel)parent.getAdapter().getItem(position);
+        mCallbacks.onItemSelected(convPreview.id);
     }
 
     /**
@@ -133,20 +135,20 @@ public class ConversationListFragment extends ListFragment {
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
+        mListView.setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
 
     public void reloadConversationList() {
-        ((ConversationPreviewAdapter)getListAdapter()).reloadConversationList();
+        ((ConversationListAdapter)mListView.getAdapter()).reloadConversationList();
     }
 
     private void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+            mListView.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+            mListView.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;

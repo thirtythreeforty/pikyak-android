@@ -21,12 +21,12 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ConversationPreviewAdapter extends ArrayAdapter<ConversationPreviewModel> {
+public class ConversationListAdapter extends ArrayAdapter<ConversationPreviewModel> {
     static final String TAG = "ConversationPreviewAdapter";
 
     final LayoutInflater mInflater;
 
-    ConversationPreviewAdapter(Context context) {
+    ConversationListAdapter(Context context) {
         super(context, R.layout.image_item, new ArrayList<ConversationPreviewModel>());
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
