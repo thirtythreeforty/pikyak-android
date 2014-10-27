@@ -4,12 +4,11 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import net.thirtythreeforty.pikyak.networking.PikyakAPIFactory;
-import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
+import com.squareup.otto.Subscribe;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationResultEvent;
+import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
 
 /**
  * A subclass of {@link VotableImageAdapter} that handles {@link ConversationModel}s.
@@ -27,25 +26,21 @@ public class ConversationDetailAdapter extends VotableImageAdapter {
 
     @Override
     public void reload() {
-        PikyakAPIFactory.getAPI().getConversation(
-                mConversationID,
-                0,
-                new Callback<ConversationModel>() {
-                    @Override
-                    public void success(ConversationModel conversationList, Response response) {
-                        replaceConversation(conversationList);
-                    }
+        BusProvider.getBus().post(new GetConversationRequestEvent(mConversationID, 0));
+    }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Toast.makeText(
-                                getContext(),
-                                "Downloading the conversation failed! Why: " + error.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        Log.e(TAG, "Download failed!", error.getCause());
-                    }
-                });
+    @Subscribe
+    public void onGetConversationResultEvent(GetConversationResultEvent resultEvent) {
+        if(resultEvent.success) {
+            replaceConversation(resultEvent.conversation);
+        } else {
+            Toast.makeText(
+                    getContext(),
+                    "Downloading the conversation failed! Why: " + resultEvent.error.getMessage(),
+                    Toast.LENGTH_SHORT
+            ).show();
+            Log.e(TAG, "Download failed!", resultEvent.error.getCause());
+        }
     }
 
     private void replaceConversation(ConversationModel conversation) {

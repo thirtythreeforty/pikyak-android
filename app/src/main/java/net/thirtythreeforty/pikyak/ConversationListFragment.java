@@ -115,8 +115,17 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
     @Override
     public void onResume() {
         super.onResume();
+        BusProvider.getBus().register(this);
+        BusProvider.getBus().register(mListView.getAdapter());
 
         reloadConversationList();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusProvider.getBus().unregister(this);
+        BusProvider.getBus().unregister(mListView.getAdapter());
     }
 
     @Override

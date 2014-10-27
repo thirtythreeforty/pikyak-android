@@ -4,13 +4,12 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import net.thirtythreeforty.pikyak.networking.PikyakAPIFactory;
-import net.thirtythreeforty.pikyak.networking.PikyakServerAPI;
-import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
+import com.squareup.otto.Subscribe;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListResultEvent;
+import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 
 /**
  * A subclass of {@link VotableImageAdapter} that handles {@link ConversationListModel}s.
@@ -23,28 +22,25 @@ public class ConversationListAdapter extends VotableImageAdapter {
     }
 
     public void reload() {
-        PikyakAPIFactory.getAPI().getConversationList(
+        BusProvider.getBus().post(new GetConversationListRequestEvent(
                 0,
-                PikyakServerAPI.SORT_METHOD_HOT,
-                "",
-                new Callback<ConversationListModel>() {
-                    @Override
-                    public void success(ConversationListModel conversationList, Response response) {
-                        replaceConversationList(conversationList);
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Toast.makeText(
-                                getContext(),
-                                "Downloading the conversation list failed! Why: " + error.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        Log.e(TAG, "Download failed!", error.getCause());
-                    }
-                });
+                PikyakAPIService.SORT_METHOD_HOT,
+                ""));
     }
 
+    @Subscribe
+    public void onConversationListResultEvent(GetConversationListResultEvent resultEvent) {
+        if(resultEvent.success) {
+            replaceConversationList(resultEvent.conversationList);
+        } else {
+            Toast.makeText(
+                    getContext(),
+                    "Downloading the conversation list failed! Why: " + resultEvent.error.getMessage(),
+                    Toast.LENGTH_SHORT
+            ).show();
+            Log.e(TAG, "Download failed!", resultEvent.error.getCause());
+        }
+    }
     private void replaceConversationList(ConversationListModel conversationList) {
         clear();
         addConversationList(conversationList);

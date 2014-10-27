@@ -95,7 +95,15 @@ public class ConversationDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        BusProvider.getBus().register(mListView.getAdapter());
         reloadConversation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(mListView.getAdapter());
     }
 
     public void reloadConversation() {

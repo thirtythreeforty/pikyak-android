@@ -11,6 +11,17 @@
     <string name="action_sort_new">Newest</string>
     <string name="action_sort_top">Best</string>
 
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_register">Register</string>
+
     <string name="action_settings">Settings</string>
+
+    <string name="action_cancel">Cancel</string>
+
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_register">Register</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="string_sign_in">Welcome to PikYak!  Please enter your username and password.</string>
 
 </resources>

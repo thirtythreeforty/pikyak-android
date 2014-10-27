@@ -31,4 +31,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile 'com.squareup.picasso:picasso:2.3.4'
+    compile 'com.squareup:otto:1.3.2'
 }

@@ -14,7 +14,7 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-public interface PikyakServerAPI {
+interface PikyakServerAPI {
     public static final String SORT_METHOD_HOT = "hot";
 
     @PUT("/users/{username}")

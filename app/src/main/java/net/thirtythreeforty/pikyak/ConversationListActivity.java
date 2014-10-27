@@ -1,6 +1,7 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,8 +25,13 @@ import android.view.MenuItem;
  * {@link ConversationListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ConversationListActivity extends Activity
-        implements ConversationListFragment.Callbacks, ConversationDetailFragment.Callbacks {
+public class ConversationListActivity
+        extends Activity
+        implements
+            ConversationListFragment.Callbacks,
+            ConversationDetailFragment.Callbacks,
+            SignInDialogFragment.Callbacks
+{
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -33,10 +39,15 @@ public class ConversationListActivity extends Activity
      */
     private boolean mTwoPane;
 
+    private SignInDialogFragment mSignInDialogFragment;
+    private static final String SIGNINDIALOGFRAGMENT_TAG = "SignInDialogFragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation_list);
+
+        FragmentManager fragmentManager = getFragmentManager();
 
         if (findViewById(R.id.conversation_detail_container) != null) {
             // The detail container view will be present only in the
@@ -47,9 +58,14 @@ public class ConversationListActivity extends Activity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((ConversationListFragment) getFragmentManager()
+            ((ConversationListFragment) fragmentManager
                     .findFragmentById(R.id.conversation_list))
                     .setActivateOnItemClick(true);
+        }
+
+        mSignInDialogFragment = (SignInDialogFragment)fragmentManager.findFragmentByTag(SIGNINDIALOGFRAGMENT_TAG);
+        if(mSignInDialogFragment == null) {
+            mSignInDialogFragment = SignInDialogFragment.newInstance();
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
@@ -69,6 +85,11 @@ public class ConversationListActivity extends Activity
                 ((ConversationListFragment) getFragmentManager()
                         .findFragmentById(R.id.conversation_list))
                         .reloadConversationList();
+                return true;
+            case R.id.action_add:
+                getFragmentManager().beginTransaction()
+                        .add(mSignInDialogFragment, SIGNINDIALOGFRAGMENT_TAG)
+                        .commit();
                 return true;
         }
         return false;

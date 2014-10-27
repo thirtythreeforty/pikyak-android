@@ -61,7 +61,7 @@ public class VotableImage extends FrameLayout implements OnClickListener {
     }
 
     public void setScore(int score) {
-        mScoreTextView.setText(Integer.toString(score));
+        mScoreTextView.setText(String.format("%d", score));
     }
 
     @Override
