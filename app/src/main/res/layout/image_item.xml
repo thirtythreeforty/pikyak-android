@@ -1,50 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
              android:descendantFocusability="blocksDescendants">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/image"
-        android:layout_gravity="center"/>
-
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginRight="4dp"
-        android:layout_marginEnd="4dp">
+        android:id="@+id/relativeLayout">
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/image"
+            android:layout_gravity="center"
+            android:layout_centerVertical="true"/>
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="▲"
-            android:id="@+id/upvoteButton"
-            android:background="?android:selectableItemBackground"/>
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/linearLayout"
+            android:layout_margin="4dp"
+            android:layout_above="@id/linearLayout">
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/scoreTextView"
-            android:height="24dp"
-            android:text="0"
-            android:gravity="center_vertical|center_horizontal"/>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▲"
+                android:id="@+id/upvoteButton"
+                android:background="?android:selectableItemBackground"/>
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="▼"
-            android:id="@+id/downvoteButton"
-            android:background="?android:selectableItemBackground"/>
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/scoreTextView"
+                android:height="24dp"
+                android:text="0"
+                android:gravity="center_vertical|center_horizontal"/>
 
-    </LinearLayout>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▼"
+                android:id="@+id/downvoteButton"
+                android:background="?android:selectableItemBackground"/>
 
-</FrameLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/favoriteButton"
+        android:text="Favorite"
+        android:textSize="12sp"
+        android:textAllCaps="true"
+        android:textColor="@android:color/darker_gray"
+        android:background="?android:selectableItemBackground"
+        android:layout_below="@id/relativeLayout"
+        android:layout_toStartOf="@+id/reportButton"
+        android:layout_toLeftOf="@+id/reportButton"
+        android:padding="4dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/reportButton"
+        android:text="Report"
+        android:textSize="12sp"
+        android:textAllCaps="true"
+        android:textColor="@android:color/holo_orange_dark"
+        android:background="?android:selectableItemBackground"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/relativeLayout"
+        android:padding="4dp"/>
+
+</RelativeLayout>

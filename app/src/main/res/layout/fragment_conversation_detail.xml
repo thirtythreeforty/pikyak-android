@@ -16,11 +16,12 @@
           tools:layout="@android:layout/list_content"
           android:layout_above="@+id/replyButton"/>
 
-    <ImageView
+    <ImageButton
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/replyButton"
         android:src="@drawable/ic_launcher"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:background="?android:selectableItemBackground"/>
 </RelativeLayout>

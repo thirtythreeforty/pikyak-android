@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 /**
@@ -46,6 +47,7 @@ public class ConversationDetailFragment extends Fragment {
     };
 
     private ListView mListView;
+    private ImageButton mReplyButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -61,6 +63,7 @@ public class ConversationDetailFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        mReplyButton = (ImageButton)view.findViewById(R.id.replyButton);
         mListView = (ListView)view.findViewById(R.id.listView);
         mListView.setAdapter(new ConversationDetailAdapter(
                 getActivity(),
