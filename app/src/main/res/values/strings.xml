@@ -18,10 +18,16 @@
 
     <string name="action_cancel">Cancel</string>
 
+    <string name="action_favorite">Favorite</string>
+    <string name="action_report">Report</string>
+
     <string name="title_sign_in">Sign In</string>
     <string name="title_register">Register</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="string_sign_in">Welcome to PikYak!  Please enter your username and password.</string>
+
+    <string name="message_API_error">A network error occurred.  Please try again.</string>
+    <string name="message_picture_error">Could not open the camera.  Please try again.</string>
 
 </resources>

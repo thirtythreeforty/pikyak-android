@@ -26,7 +26,7 @@ public class PikyakApplication extends Application {
 
     @Subscribe
     public void onApiError(APIErrorEvent event) {
-        Toast.makeText(this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.message_API_error), Toast.LENGTH_SHORT).show();
         Log.e("PikyakApplication", "An API error occurred.", event.error);
     }
 }

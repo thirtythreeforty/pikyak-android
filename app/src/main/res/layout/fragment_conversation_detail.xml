@@ -23,5 +23,6 @@
         android:src="@drawable/ic_launcher"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="?android:selectableItemBackground"/>
+        android:background="?android:selectableItemBackground"
+        android:padding="4dp"/>
 </RelativeLayout>
