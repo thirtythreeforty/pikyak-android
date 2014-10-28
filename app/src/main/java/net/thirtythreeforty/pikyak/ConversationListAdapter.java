@@ -1,8 +1,6 @@
 package net.thirtythreeforty.pikyak;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -30,16 +28,7 @@ public class ConversationListAdapter extends VotableImageAdapter {
 
     @Subscribe
     public void onConversationListResultEvent(GetConversationListResultEvent resultEvent) {
-        if(resultEvent.success) {
-            replaceConversationList(resultEvent.conversationList);
-        } else {
-            Toast.makeText(
-                    getContext(),
-                    "Downloading the conversation list failed! Why: " + resultEvent.error.getMessage(),
-                    Toast.LENGTH_SHORT
-            ).show();
-            Log.e(TAG, "Download failed!", resultEvent.error.getCause());
-        }
+        replaceConversationList(resultEvent.conversationList);
     }
     private void replaceConversationList(ConversationListModel conversationList) {
         clear();

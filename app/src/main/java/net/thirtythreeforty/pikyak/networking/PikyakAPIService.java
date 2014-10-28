@@ -46,12 +46,10 @@ public final class PikyakAPIService {
         pikyakServerAPI = restAdapter.create(PikyakServerAPI.class);
     }
 
-    private static abstract class BaseResultEvent {
-        public boolean success;
+    public static class APIErrorEvent {
         public RetrofitError error;
 
-        protected BaseResultEvent(boolean success, RetrofitError error) {
-            this.success = success;
+        protected APIErrorEvent(RetrofitError error) {
             this.error = error;
         }
     }
@@ -64,10 +62,7 @@ public final class PikyakAPIService {
             this.password = password;
         }
     }
-    public static class RegistrationResultEvent extends BaseResultEvent {
-        public RegistrationResultEvent(boolean success, RetrofitError error) {
-            super(success, error);
-        }
+    public static class RegistrationResultEvent {
     }
     private boolean mRegistrationRequestEventInProgress = false;
     @Subscribe
@@ -82,13 +77,13 @@ public final class PikyakAPIService {
                 @Override
                 public void success(RegistrationResponseModel registrationResponseModel, Response response) {
                     mRegistrationRequestEventInProgress = false;
-                    BusProvider.getBus().post(new RegistrationResultEvent(true, null));
+                    BusProvider.getBus().post(new RegistrationResultEvent());
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
                     mRegistrationRequestEventInProgress = false;
-                    BusProvider.getBus().post(new RegistrationResultEvent(false, error));
+                    BusProvider.getBus().post(new APIErrorEvent(error));
                 }
             });
         }
@@ -96,10 +91,7 @@ public final class PikyakAPIService {
 
     public static class UnregistrationRequestEvent {
     }
-    public static class UnregistrationResultEvent extends BaseResultEvent {
-        UnregistrationResultEvent(boolean success, RetrofitError error) {
-            super(success, error);
-        }
+    public static class UnregistrationResultEvent {
     }
     @Subscribe
     public void onUnregistrationRequest(UnregistrationRequestEvent requestEvent) {
@@ -118,11 +110,10 @@ public final class PikyakAPIService {
             this.geo = geo;
         }
     }
-    public static class GetConversationListResultEvent extends BaseResultEvent {
+    public static class GetConversationListResultEvent {
         public ConversationListModel conversationList;
 
-        public GetConversationListResultEvent(boolean success, RetrofitError error, ConversationListModel conversationList) {
-            super(success, error);
+        public GetConversationListResultEvent(ConversationListModel conversationList) {
             this.conversationList = conversationList;
         }
     }
@@ -140,13 +131,13 @@ public final class PikyakAPIService {
                         @Override
                         public void success(ConversationListModel conversationList, Response response) {
                             mGetConversationListRequestInProgress = false;
-                            BusProvider.getBus().post(logResult(new GetConversationListResultEvent(true, null, conversationList)));
+                            BusProvider.getBus().post(logResult(new GetConversationListResultEvent(conversationList)));
                         }
 
                         @Override
                         public void failure(RetrofitError error) {
                             mGetConversationListRequestInProgress = false;
-                            BusProvider.getBus().post(logResult(new GetConversationListResultEvent(false, error, null)));
+                            BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
                         }
                     }
             );
@@ -162,13 +153,11 @@ public final class PikyakAPIService {
             this.conversation_id = conversation_id;
         }
     }
-    public static class GetConversationResultEvent extends BaseResultEvent {
+    public static class GetConversationResultEvent {
         public ConversationModel conversation;
 
-        public GetConversationResultEvent(boolean success, RetrofitError error, ConversationModel conversation) {
-            super(success, error);
+        public GetConversationResultEvent(ConversationModel conversation) {
             this.conversation = conversation;
-            this.error = error;
         }
     }
     @Subscribe
@@ -180,12 +169,12 @@ public final class PikyakAPIService {
                 new Callback<ConversationModel>() {
                     @Override
                     public void success(ConversationModel conversation, Response response) {
-                        BusProvider.getBus().post(logResult(new GetConversationResultEvent(true, null, conversation)));
+                        BusProvider.getBus().post(logResult(new GetConversationResultEvent(conversation)));
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new GetConversationResultEvent(false, error, null)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
                     }
                 }
         );
@@ -194,8 +183,8 @@ public final class PikyakAPIService {
     private static void logRequest(Object o) {
         Log.d(TAG, "Received request of type " + o.getClass().getSimpleName());
     }
-    private static BaseResultEvent logResult(BaseResultEvent result) {
-        Log.d(TAG, "Sending event of type " + result.getClass().getSimpleName() + " (" + result.success + ")");
-        return result;
+    private static Object logResult(Object o) {
+        Log.d(TAG, "Sending result of type " + o.getClass().getSimpleName());
+        return o;
     }
 }
