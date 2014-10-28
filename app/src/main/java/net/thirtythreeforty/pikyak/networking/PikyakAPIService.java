@@ -29,8 +29,7 @@ public final class PikyakAPIService {
         return pikyakServerAPI;
     }
 
-    // For now, this will use the emulator's host machine.  Change this when we deploy.
-    private static final String PIKYAK_SERVER = "http://10.0.2.2:8888";
+    private static final String PIKYAK_SERVER = "http://104.131.167.43:5000/";
     // Connection timeout in seconds
     private static final int CONNECT_TIMEOUT_SEC = 5;
 
