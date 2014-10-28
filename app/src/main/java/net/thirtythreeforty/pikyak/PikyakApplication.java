@@ -1,10 +1,14 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Application;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.APIErrorEvent;
 
 public class PikyakApplication extends Application {
     private PikyakAPIService mPikyakAPIService;
@@ -20,9 +24,9 @@ public class PikyakApplication extends Application {
         mBus.register(this); //listen for "global" events
     }
 
-//    @Subscribe
-//    public void onApiError(ApiErrorEvent event) {
-//        toast("Something went wrong, please try again.");
-//        Log.e("ReaderApp", event.getErrorMessage());
-//    }
+    @Subscribe
+    public void onApiError(APIErrorEvent event) {
+        Toast.makeText(this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+        Log.e("PikyakApplication", "An API error occurred.", event.error);
+    }
 }
