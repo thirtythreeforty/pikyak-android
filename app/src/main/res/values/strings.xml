@@ -6,6 +6,7 @@
 
     <string name="action_refresh">Refresh</string>
     <string name="action_add">New</string>
+    <string name="action_reply">Reply</string>
 
     <string name="action_sort">Sort</string>
     <string name="action_sort_new">Newest</string>
