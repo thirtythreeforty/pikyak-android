@@ -425,8 +425,8 @@ public final class PikyakAPIService {
     // Utility methods
 
     private static String computeAuthorization(AuthorizationRetriever a) {
-        return Base64.encodeToString(
-                ("Basic " + a.getUsername() + ":" + a.getPassword()).getBytes(Charset.forName("UTF-8")),
+        return "Basic " + Base64.encodeToString(
+                (a.getUsername() + ":" + a.getPassword()).getBytes(Charset.forName("UTF-8")),
                 Base64.NO_WRAP);
     }
 
