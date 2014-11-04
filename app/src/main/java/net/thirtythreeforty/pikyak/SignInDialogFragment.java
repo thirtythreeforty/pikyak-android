@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.RegistrationRequestEvent;
 
 public class SignInDialogFragment extends DialogFragment {
@@ -31,13 +32,23 @@ public class SignInDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Builder builder = new Builder(getActivity())
                 .setTitle(R.string.title_sign_in)
-                        // These listeners will be set when the dialog is displayed.
                 .setPositiveButton(R.string.action_sign_in, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        final String username = mUsernameEditText.getText().toString();
+                        final String password = mPasswordEditText.getText().toString();
                         BusProvider.getBus().post(new RegistrationRequestEvent(
-                                mUsernameEditText.getText().toString(),
-                                mPasswordEditText.getText().toString()));
+                                new AuthorizationRetriever() {
+                                    @Override
+                                    public String getUsername() {
+                                        return username;
+                                    }
+
+                                    @Override
+                                    public String getPassword() {
+                                        return password;
+                                    }
+                                }));
                     }
                 })
                 .setNegativeButton(R.string.action_cancel, null);

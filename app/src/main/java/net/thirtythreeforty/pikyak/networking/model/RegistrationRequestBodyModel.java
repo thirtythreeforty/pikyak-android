@@ -1,6 +1,6 @@
 package net.thirtythreeforty.pikyak.networking.model;
 
-public class RegistrationBodyModel {
+public class RegistrationRequestBodyModel {
     public String email = "";
     public String gcm_id = "";
 }
