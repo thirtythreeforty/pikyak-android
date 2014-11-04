@@ -15,13 +15,16 @@ import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
 import java.util.ArrayList;
 
-/**
- *
- */
 abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
     static final String TAG = "VotableImageAdapter";
 
     final LayoutInflater mInflater;
+
+    public interface Callbacks {
+        public void onRefreshCompleted(boolean success);
+    }
+
+    protected Callbacks mCallbacks = null;
 
     public VotableImageAdapter(Context context) {
         super(context, R.layout.image_item, new ArrayList<ImageModel>());
@@ -38,6 +41,10 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
 
         // Again, for testing.
         Picasso.with(getContext()).setIndicatorsEnabled(true);
+    }
+
+    public void setCallbacks(Callbacks callbacks) {
+        mCallbacks = callbacks;
     }
 
     abstract public void reload();

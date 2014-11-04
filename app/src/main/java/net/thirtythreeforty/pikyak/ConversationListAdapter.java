@@ -5,6 +5,7 @@ import android.content.Context;
 import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.APIErrorEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListResultEvent;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
@@ -29,6 +30,13 @@ public class ConversationListAdapter extends VotableImageAdapter {
     @Subscribe
     public void onConversationListResultEvent(GetConversationListResultEvent resultEvent) {
         replaceConversationList(resultEvent.conversationList);
+        if(mCallbacks != null) mCallbacks.onRefreshCompleted(true);
+    }
+    @Subscribe
+    public void onApiErrorEvent(APIErrorEvent errorEvent) {
+        if(errorEvent.requestEvent instanceof GetConversationListRequestEvent) {
+            if(mCallbacks != null) mCallbacks.onRefreshCompleted(false);
+        }
     }
     private void replaceConversationList(ConversationListModel conversationList) {
         clear();

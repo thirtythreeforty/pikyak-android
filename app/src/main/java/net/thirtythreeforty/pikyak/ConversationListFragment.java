@@ -2,7 +2,10 @@ package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +24,12 @@ import net.thirtythreeforty.pikyak.networking.model.ImageModel;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ConversationListFragment extends Fragment implements OnItemClickListener {
+public class ConversationListFragment
+    extends Fragment
+    implements OnItemClickListener,
+               OnRefreshListener,
+               VotableImageAdapter.Callbacks
+{
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -41,6 +49,7 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     private ListView mListView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -86,8 +95,14 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
 
-        mListView = (ListView)view.findViewById(R.id.listView);
-        mListView.setAdapter(new ConversationListAdapter(getActivity()));
+        mSwipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(Color.rgb(0x5D, 0x40, 0x37));
+
+        mListView = (ListView)mSwipeRefreshLayout.findViewById(R.id.listView);
+        ConversationListAdapter listAdapter = new ConversationListAdapter(getActivity());
+        listAdapter.setCallbacks(this);
+        mListView.setAdapter(listAdapter);
         mListView.setOnItemClickListener(this);
     }
 
@@ -144,6 +159,17 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
         mCallbacks.onItemSelected(convPreview.id);
     }
 
+    @Override
+    public void onRefresh() {
+        doReloadConversationList();
+    }
+
+    @Override
+    public void onRefreshCompleted(boolean success) {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+
     /**
      * Turns on activate-on-click mode. When this mode is on, list items will be
      * given the 'activated' state when touched.
@@ -157,6 +183,13 @@ public class ConversationListFragment extends Fragment implements OnItemClickLis
     }
 
     public void reloadConversationList() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        doReloadConversationList();
+}
+
+    private void doReloadConversationList() {
+        // This method is required to avoid messing with the mSwipeRefreshLayout if it is the View
+        // that triggered the refresh.
         ((ConversationListAdapter)mListView.getAdapter()).reload();
     }
 

@@ -62,9 +62,11 @@ public final class PikyakAPIService {
 
     public static class APIErrorEvent {
         public RetrofitError error;
+        public Object requestEvent = null;
 
-        protected APIErrorEvent(RetrofitError error) {
+        protected APIErrorEvent(RetrofitError error, Object requestEvent) {
             this.error = error;
+            this.requestEvent = requestEvent;
         }
     }
 
@@ -79,7 +81,7 @@ public final class PikyakAPIService {
     }
     private boolean mRegistrationRequestInProgress = false;
     @Subscribe
-    public void onRegistrationRequest(RegistrationRequestEvent requestEvent) {
+    public void onRegistrationRequest(final RegistrationRequestEvent requestEvent) {
         logRequest(requestEvent);
         if(!mRegistrationRequestInProgress) {
             mRegistrationRequestInProgress = true;
@@ -100,7 +102,7 @@ public final class PikyakAPIService {
                         @Override
                         public void failure(RetrofitError error) {
                             mRegistrationRequestInProgress = false;
-                            BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                            BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                         }
                     }
             );
@@ -118,7 +120,7 @@ public final class PikyakAPIService {
     }
     private boolean mUnregistrationRequestInProgress = false;
     @Subscribe
-    public void onUnregistrationRequest(UnregistrationRequestEvent requestEvent) {
+    public void onUnregistrationRequest(final UnregistrationRequestEvent requestEvent) {
         logRequest(requestEvent);
         if(!mUnregistrationRequestInProgress) {
             mUnregistrationRequestInProgress = true;
@@ -135,7 +137,7 @@ public final class PikyakAPIService {
                         @Override
                         public void failure(RetrofitError error) {
                             mUnregistrationRequestInProgress = false;
-                            BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                            BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                         }
                     }
             );
@@ -162,7 +164,7 @@ public final class PikyakAPIService {
     }
     private boolean mGetConversationListRequestInProgress = false;
     @Subscribe
-    public void onGetConversationListRequest(GetConversationListRequestEvent requestEvent) {
+    public void onGetConversationListRequest(final GetConversationListRequestEvent requestEvent) {
         logRequest(requestEvent);
         if(!mGetConversationListRequestInProgress) {
             mGetConversationListRequestInProgress = true;
@@ -180,7 +182,7 @@ public final class PikyakAPIService {
                         @Override
                         public void failure(RetrofitError error) {
                             mGetConversationListRequestInProgress = false;
-                            BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                            BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                         }
                     }
             );
@@ -217,7 +219,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -234,7 +236,7 @@ public final class PikyakAPIService {
     public static class CreateConversationResultEvent {
     }
     @Subscribe
-    public void onCreateConversationRequest(CreateConversationRequestEvent requestEvent) {
+    public void onCreateConversationRequest(final CreateConversationRequestEvent requestEvent) {
         logRequest(requestEvent);
         CreatePostRequestBodyModel createPostRequestBodyModel = new CreatePostRequestBodyModel();
         createPostRequestBodyModel.image = requestEvent.image;
@@ -249,7 +251,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -269,7 +271,7 @@ public final class PikyakAPIService {
     public static class CreatePostResultEvent {
     }
     @Subscribe
-    public void onCreatePostRequest(CreatePostRequestEvent requestEvent) {
+    public void onCreatePostRequest(final CreatePostRequestEvent requestEvent) {
         logRequest(requestEvent);
         CreatePostRequestBodyModel body = new CreatePostRequestBodyModel();
         body.image = requestEvent.image;
@@ -285,7 +287,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -305,7 +307,7 @@ public final class PikyakAPIService {
     public static class CreateVoteResultEvent {
     }
     @Subscribe
-    public void onCreateVoteRequest(CreateVoteRequestEvent requestEvent) {
+    public void onCreateVoteRequest(final CreateVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         CreateVoteRequestBodyModel body = new CreateVoteRequestBodyModel();
         body.value = requestEvent.value;
@@ -321,7 +323,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -339,7 +341,7 @@ public final class PikyakAPIService {
     public static class DeleteVoteResultEvent {
     }
     @Subscribe
-    public void onDeleteVoteRequest(DeleteVoteRequestEvent requestEvent) {
+    public void onDeleteVoteRequest(final DeleteVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().deleteVote(
                 computeAuthorization(requestEvent.authorizationRetriever),
@@ -352,7 +354,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -370,7 +372,7 @@ public final class PikyakAPIService {
     public static class CreateBlockResultEvent {
     }
     @Subscribe
-    public void onCreateBlockRequest(CreateBlockRequestEvent requestEvent) {
+    public void onCreateBlockRequest(final CreateBlockRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().createBlock(
                 computeAuthorization(requestEvent.authorizationRetriever),
@@ -383,7 +385,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
@@ -401,7 +403,7 @@ public final class PikyakAPIService {
     public static class DeleteBlockResultEvent {
     }
     @Subscribe
-    public void onDeleteBlockRequest(DeleteVoteRequestEvent requestEvent) {
+    public void onDeleteBlockRequest(final DeleteVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().deleteBlock(
                 computeAuthorization(requestEvent.authorizationRetriever),
@@ -414,7 +416,7 @@ public final class PikyakAPIService {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        BusProvider.getBus().post(logResult(new APIErrorEvent(error)));
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
                     }
                 }
         );
