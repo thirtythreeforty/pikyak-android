@@ -54,13 +54,15 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
         final VotableImage view = (convertView instanceof VotableImage)
                 ? (VotableImage)convertView
                 : new VotableImage(getContext());
+        boolean isNewView = view != convertView;
         final ImageModel post = getItem(position);
 
-        view.setScore(position); // Testing only, obviously
+        view.getImage().setImageResource(android.R.color.transparent);
+        view.setScore(post.score);
 
         // Picasso doesn't like loading an empty image
-        if(!post.image.isEmpty()) {
-            final ImageView imageView = view.getImage();
+        final ImageView imageView = view.getImage();
+        if(!post.image.isEmpty() && isNewView) {
             imageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 // Wait until layout to load image, TODO load asynchronously?
                 @Override
@@ -68,17 +70,22 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
                     // Ensure we call this only once
                     imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 
-                    Transformation t = new KeepRatioTransformation(imageView.getWidth());
-                    Picasso.with(getContext())
-                            .load(post.image)
-                            .transform(t)
-                            .error(R.drawable.ic_action_refresh)
-                            .into(imageView);
+                    doLoad(imageView, post);
                 }
             });
-
+        } else {
+            doLoad(imageView, post);
         }
 
         return view;
+    }
+
+    private void doLoad(ImageView imageView, ImageModel post) {
+        Transformation t = new KeepRatioTransformation(imageView.getWidth());
+        Picasso.with(getContext())
+                .load(post.image)
+                .transform(t)
+                .error(R.drawable.ic_action_refresh)
+                .into(imageView);
     }
 }
