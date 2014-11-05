@@ -31,16 +31,9 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        // Dummies for testing
-        ImageModel post = new ImageModel();
-        post.image = "http://www.google.com/images/srpr/logo11w.png";
-        add(post);
-        post = new ImageModel();
-        post.image = "http://funnycat-pictures.com/wp-content/uploads/2014/10/funny-cat-photos.jpg";
-        add(post);
-
-        // Again, for testing.
-        Picasso.with(getContext()).setIndicatorsEnabled(true);
+        if(BuildConfig.DEBUG) {
+            Picasso.with(getContext()).setIndicatorsEnabled(true);
+        }
     }
 
     public void setCallbacks(Callbacks callbacks) {
