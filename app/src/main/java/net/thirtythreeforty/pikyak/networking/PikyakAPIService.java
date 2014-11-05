@@ -1,6 +1,5 @@
 package net.thirtythreeforty.pikyak.networking;
 
-import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.Log;
 
@@ -11,7 +10,6 @@ import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateBlockResponseModel;
-import net.thirtythreeforty.pikyak.networking.model.CreatePostRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreatePostResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteResponseModel;
@@ -21,6 +19,7 @@ import net.thirtythreeforty.pikyak.networking.model.RegistrationRequestBodyModel
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +29,7 @@ import retrofit.RestAdapter.Builder;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
+import retrofit.mime.TypedFile;
 
 public final class PikyakAPIService {
     private static final String TAG = "PikyakAPIService";
@@ -227,10 +227,11 @@ public final class PikyakAPIService {
 
     public static class CreateConversationRequestEvent {
         public AuthorizationRetriever authorizationRetriever;
-        public Bitmap image;
+        public String filename;
 
-        public CreateConversationRequestEvent(AuthorizationRetriever authorizationRetriever) {
+        public CreateConversationRequestEvent(AuthorizationRetriever authorizationRetriever, String filename) {
             this.authorizationRetriever = authorizationRetriever;
+            this.filename = filename;
         }
     }
     public static class CreateConversationResultEvent {
@@ -238,11 +239,10 @@ public final class PikyakAPIService {
     @Subscribe
     public void onCreateConversationRequest(final CreateConversationRequestEvent requestEvent) {
         logRequest(requestEvent);
-        CreatePostRequestBodyModel createPostRequestBodyModel = new CreatePostRequestBodyModel();
-        createPostRequestBodyModel.image = requestEvent.image;
         getAPI().createConversation(
                 computeAuthorization(requestEvent.authorizationRetriever),
-                createPostRequestBodyModel,
+                "",
+                getTypedFile(requestEvent.filename),
                 new Callback<CreatePostResponseModel>() {
                     @Override
                     public void success(CreatePostResponseModel createPostResponse, Response response) {
@@ -260,12 +260,12 @@ public final class PikyakAPIService {
     public static class CreatePostRequestEvent {
         public AuthorizationRetriever authorizationRetriever;
         public int conversation_id;
-        public Bitmap image;
+        public String filename;
 
-        public CreatePostRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id, Bitmap image) {
+        public CreatePostRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id, String filename) {
             this.authorizationRetriever = authorizationRetriever;
             this.conversation_id = conversation_id;
-            this.image = image;
+            this.filename = filename;
         }
     }
     public static class CreatePostResultEvent {
@@ -273,12 +273,11 @@ public final class PikyakAPIService {
     @Subscribe
     public void onCreatePostRequest(final CreatePostRequestEvent requestEvent) {
         logRequest(requestEvent);
-        CreatePostRequestBodyModel body = new CreatePostRequestBodyModel();
-        body.image = requestEvent.image;
         getAPI().createPost(
                 computeAuthorization(requestEvent.authorizationRetriever),
                 requestEvent.conversation_id,
-                body,
+                "",
+                getTypedFile(requestEvent.filename),
                 new Callback<CreatePostResponseModel>() {
                     @Override
                     public void success(CreatePostResponseModel createPostResponse, Response response) {
@@ -428,6 +427,10 @@ public final class PikyakAPIService {
         return "Basic " + Base64.encodeToString(
                 (a.getUsername() + ":" + a.getPassword()).getBytes(Charset.forName("UTF-8")),
                 Base64.NO_WRAP);
+    }
+
+    private static TypedFile getTypedFile(String s) {
+        return new TypedFile("application/octet-stream", new File(s));
     }
 
     private static void logRequest(Object o) {

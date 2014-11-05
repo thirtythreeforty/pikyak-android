@@ -17,6 +17,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -138,7 +141,25 @@ public class ConversationDetailFragment extends Fragment implements OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if(resultCode != Activity.RESULT_OK) {
+                // The file is empty and not needed
                 new File(mImagePath).delete();
+            } else {
+                // Send the reply.
+                BusProvider.getBus().post(new CreateConversationRequestEvent(
+                //BusProvider.getBus().post(new CreatePostRequestEvent(
+                        new AuthorizationRetriever() {
+                            @Override
+                            public String getUsername() {
+                                return "test";
+                            }
+
+                            @Override
+                            public String getPassword() {
+                                return "test";
+                            }
+                        },
+                        mImagePath
+                ));
             }
         }
     }

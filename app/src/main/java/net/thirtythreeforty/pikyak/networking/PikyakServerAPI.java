@@ -3,7 +3,6 @@ package net.thirtythreeforty.pikyak.networking;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateBlockResponseModel;
-import net.thirtythreeforty.pikyak.networking.model.CreatePostRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreatePostResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteResponseModel;
@@ -18,10 +17,13 @@ import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 
 interface PikyakServerAPI {
     public static final String SORT_METHOD_HOT = "hot";
@@ -52,17 +54,21 @@ interface PikyakServerAPI {
             @Query("first") int first_post,
             Callback<ConversationModel> callback);
 
+    @Multipart
     @POST("/conversations")
     public void createConversation(
             @Header("Authorization") String auth,
-            @Body CreatePostRequestBodyModel body,
+            @Part("geo") String geo,
+            @Part("image") TypedFile image,
             Callback<CreatePostResponseModel> callback);
 
+    @Multipart
     @POST("/conversations/{conversation_id}")
     public void createPost(
             @Header("Authorization") String auth,
             @Path("conversation_id") int conversation_id,
-            @Body CreatePostRequestBodyModel body,
+            @Part("geo") String geo,
+            @Part("image") TypedFile image,
             Callback<CreatePostResponseModel> callback);
 
     @PUT("/posts/{post_id}/user_score")
