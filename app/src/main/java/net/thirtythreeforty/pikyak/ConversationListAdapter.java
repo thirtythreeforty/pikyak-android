@@ -29,7 +29,9 @@ public class ConversationListAdapter extends VotableImageAdapter {
 
     @Subscribe
     public void onConversationListResultEvent(GetConversationListResultEvent resultEvent) {
-        replaceConversationList(resultEvent.conversationList);
+        if(resultEvent.conversationList != null) {
+            replaceConversationList(resultEvent.conversationList);
+        }
         if(mCallbacks != null) mCallbacks.onRefreshCompleted(true);
     }
     @Subscribe
@@ -44,7 +46,9 @@ public class ConversationListAdapter extends VotableImageAdapter {
     }
 
     private void addConversationList(ConversationListModel conversationList) {
-        addAll(conversationList.conversations);
-        notifyDataSetChanged();
+        if(conversationList.conversations != null) {
+            addAll(conversationList.conversations);
+            notifyDataSetChanged();
+        }
     }
 }
