@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
@@ -81,10 +80,9 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
     }
 
     private void doLoad(ImageView imageView, ImageModel post) {
-        Transformation t = new KeepRatioTransformation(imageView.getWidth());
         Picasso.with(getContext())
                 .load(post.image)
-                .transform(t)
+                .resize(imageView.getWidth(), 0)
                 .error(R.drawable.ic_action_refresh)
                 .into(imageView);
     }
