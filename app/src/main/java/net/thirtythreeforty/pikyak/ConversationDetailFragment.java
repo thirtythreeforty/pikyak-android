@@ -2,28 +2,11 @@ package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
-import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -34,8 +17,7 @@ import java.util.Date;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ConversationDetailFragment extends Fragment implements OnClickListener {
-    private static final String TAG = "ConversationDetailFragment";
+public class ConversationDetailFragment extends Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -63,12 +45,7 @@ public class ConversationDetailFragment extends Fragment implements OnClickListe
     private static Callbacks sDummyCallbacks = new Callbacks() {
     };
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-
     private ListView mListView;
-    private ImageButton mReplyButton;
-
-    private String mImagePath;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -84,10 +61,6 @@ public class ConversationDetailFragment extends Fragment implements OnClickListe
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        mReplyButton = (ImageButton)view.findViewById(R.id.replyButton);
-        mReplyButton.setOnClickListener(this);
-        showReplyButton();
-
         mListView = (ListView)view.findViewById(R.id.listView);
         mListView.setAdapter(new ConversationDetailAdapter(
                 getActivity(),
@@ -130,86 +103,7 @@ public class ConversationDetailFragment extends Fragment implements OnClickListe
         BusProvider.getBus().unregister(mListView.getAdapter());
     }
 
-    @Override
-    public void onClick(View v) {
-        if(v == mReplyButton) {
-            dispatchTakePictureIntent();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            if(resultCode != Activity.RESULT_OK) {
-                // The file is empty and not needed
-                new File(mImagePath).delete();
-            } else {
-                // Send the reply.
-                BusProvider.getBus().post(new CreateConversationRequestEvent(
-                //BusProvider.getBus().post(new CreatePostRequestEvent(
-                        new AuthorizationRetriever() {
-                            @Override
-                            public String getUsername() {
-                                return "test";
-                            }
-
-                            @Override
-                            public String getPassword() {
-                                return "test";
-                            }
-                        },
-                        mImagePath
-                ));
-            }
-        }
-    }
-
     public void reloadConversation() {
         ((ConversationDetailAdapter)mListView.getAdapter()).reload();
-    }
-
-    private void showReplyButton() {
-        if(getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            mReplyButton.setVisibility(View.VISIBLE);
-        } else {
-            mReplyButton.setVisibility(View.GONE);
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "PIKYAK_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        mImagePath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Toast.makeText(getActivity(), R.string.message_picture_error, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error creating file for camera.", ex);
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
     }
 }
