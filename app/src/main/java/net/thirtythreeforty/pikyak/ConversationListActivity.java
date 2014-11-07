@@ -1,11 +1,8 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -80,15 +77,15 @@ public class ConversationListActivity
                     .setActivateOnItemClick(true);
         }
 
+        // Special case here, this fragment is only attached when we want the dialog to appear.
+        mSignInDialogFragment = SignInDialogFragment.newInstance();
+
         if(savedInstanceState == null) {
-            mSignInDialogFragment = SignInDialogFragment.newInstance();
             mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
             fragmentManager.beginTransaction()
                     .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
                     .commit();
         } else {
-            mSignInDialogFragment = (SignInDialogFragment)fragmentManager
-                    .findFragmentByTag(SIGNINDIALOGFRAGMENT_TAG);
             mImageDispatcherFragment = (ImageDispatcherFragment)fragmentManager
                     .findFragmentByTag(IMAGEDISPATCHER_TAG);
         }
