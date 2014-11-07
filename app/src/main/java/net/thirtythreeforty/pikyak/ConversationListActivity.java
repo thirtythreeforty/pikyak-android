@@ -8,6 +8,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.squareup.otto.Subscribe;
+
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
+
 
 /**
  * An activity representing a list of Conversations. This activity
@@ -30,7 +36,8 @@ public class ConversationListActivity
         implements
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
-            SignInDialogFragment.Callbacks
+            SignInDialogFragment.Callbacks,
+            ImageDispatcherFragment.Callbacks
 {
 
     /**
@@ -41,6 +48,9 @@ public class ConversationListActivity
 
     private SignInDialogFragment mSignInDialogFragment;
     private static final String SIGNINDIALOGFRAGMENT_TAG = "SignInDialogFragment";
+
+    private ImageDispatcherFragment mImageDispatcherFragment;
+    private static final String IMAGEDISPATCHER_TAG = "dispatcher";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +73,30 @@ public class ConversationListActivity
                     .setActivateOnItemClick(true);
         }
 
-        mSignInDialogFragment = (SignInDialogFragment)fragmentManager.findFragmentByTag(SIGNINDIALOGFRAGMENT_TAG);
-        if(mSignInDialogFragment == null) {
+        if(savedInstanceState == null) {
             mSignInDialogFragment = SignInDialogFragment.newInstance();
+            mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
+            fragmentManager.beginTransaction()
+                    .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
+                    .commit();
+        } else {
+            mSignInDialogFragment = (SignInDialogFragment)fragmentManager
+                    .findFragmentByTag(SIGNINDIALOGFRAGMENT_TAG);
+            mImageDispatcherFragment = (ImageDispatcherFragment)fragmentManager
+                    .findFragmentByTag(IMAGEDISPATCHER_TAG);
         }
+    }
 
-        // TODO: If exposing deep links into your app, handle intents here.
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusProvider.getBus().register(this);
     }
 
     @Override
@@ -81,12 +109,15 @@ public class ConversationListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
+            case R.id.action_add:
+                mImageDispatcherFragment.takePicture();
+                return true;
             case R.id.action_refresh:
                 ((ConversationListFragment) getFragmentManager()
                         .findFragmentById(R.id.conversation_list))
                         .reloadConversationList();
                 return true;
-            case R.id.action_add:
+            case R.id.action_settings:
                 getFragmentManager().beginTransaction()
                         .add(mSignInDialogFragment, SIGNINDIALOGFRAGMENT_TAG)
                         .commit();
@@ -120,5 +151,30 @@ public class ConversationListActivity
             detailIntent.putExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, id);
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public void doUpload(String imagePath) {
+        BusProvider.getBus().post(new CreateConversationRequestEvent(
+                new AuthorizationRetriever() {
+                    @Override
+                    public String getUsername() {
+                        return "test";
+                    }
+
+                    @Override
+                    public String getPassword() {
+                        return "test";
+                    }
+                },
+                imagePath
+        ));
+    }
+
+    @Subscribe
+    public void onCreateConversationResultEvent(CreateConversationResultEvent resultEvent) {
+        ((ConversationListFragment) getFragmentManager()
+                .findFragmentById(R.id.conversation_list))
+                .reloadConversationList();
     }
 }

@@ -1,25 +1,13 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import net.thirtythreeforty.pikyak.ConversationDetailFragment.Callbacks;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
-import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequestEvent;
 
 
 /**
@@ -31,11 +19,14 @@ import java.util.Date;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ConversationDetailFragment}.
  */
-public class ConversationDetailActivity extends Activity implements Callbacks {
+public class ConversationDetailActivity extends Activity
+        implements ConversationDetailFragment.Callbacks,
+                   ImageDispatcherFragment.Callbacks
+{
     private static final String TAG = "ConversationDetailActivity";
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private String mImagePath;
+    private ImageDispatcherFragment mImageDispatcherFragment;
+    private static final String IMAGEDISPATCHER_TAG = "dispatcher";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +47,18 @@ public class ConversationDetailActivity extends Activity implements Callbacks {
             Bundle arguments = new Bundle();
             arguments.putInt(ConversationDetailFragment.ARG_CONVERSATION_ID,
                     getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0));
-            ConversationDetailFragment fragment = new ConversationDetailFragment();
-            fragment.setArguments(arguments);
+            ConversationDetailFragment conversationFragment = new ConversationDetailFragment();
+            conversationFragment.setArguments(arguments);
+
+            mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
+
             getFragmentManager().beginTransaction()
-                    .add(R.id.conversation_detail_container, fragment)
+                    .add(R.id.conversation_detail_container, conversationFragment)
+                    .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
                     .commit();
+        } else {
+            mImageDispatcherFragment = (ImageDispatcherFragment)getFragmentManager()
+                    .findFragmentByTag(IMAGEDISPATCHER_TAG);
         }
     }
 
@@ -76,73 +74,28 @@ public class ConversationDetailActivity extends Activity implements Callbacks {
         int id = item.getItemId();
         switch(id) {
             case R.id.action_add:
-                dispatchTakePictureIntent();
+                mImageDispatcherFragment.takePicture();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            if(resultCode != Activity.RESULT_OK) {
-                // The file is empty and not needed
-                new File(mImagePath).delete();
-            } else {
-                // Send the reply.
-                BusProvider.getBus().post(new CreateConversationRequestEvent(
-                        //BusProvider.getBus().post(new CreatePostRequestEvent(
-                        new AuthorizationRetriever() {
-                            @Override
-                            public String getUsername() {
-                                return "test";
-                            }
+    public void doUpload(String imagePath) {
+        BusProvider.getBus().post(new CreatePostRequestEvent(
+                new AuthorizationRetriever() {
+                    @Override
+                    public String getUsername() {
+                        return "test";
+                    }
 
-                            @Override
-                            public String getPassword() {
-                                return "test";
-                            }
-                        },
-                        mImagePath
-                ));
-            }
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "PIKYAK_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        mImagePath = image.getAbsolutePath();
-        return image;
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Toast.makeText(this, R.string.message_picture_error, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error creating file for camera.", ex);
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
+                    @Override
+                    public String getPassword() {
+                        return "test";
+                    }
+                },
+                getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0),
+                imagePath
+        ));
     }
 }
