@@ -1,9 +1,16 @@
 package net.thirtythreeforty.pikyak;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -85,6 +92,8 @@ public class ConversationListActivity
             mImageDispatcherFragment = (ImageDispatcherFragment)fragmentManager
                     .findFragmentByTag(IMAGEDISPATCHER_TAG);
         }
+
+        displayAlphaDialog();
     }
 
     @Override
@@ -176,5 +185,25 @@ public class ConversationListActivity
         ((ConversationListFragment) getFragmentManager()
                 .findFragmentById(R.id.conversation_list))
                 .reloadConversationList();
+    }
+
+    private void displayAlphaDialog() {
+        final String welcomeScreenShownPref = "alphaDialogShown";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // second argument is the default to use if the preference can't be found
+        Boolean welcomeScreenShown = prefs.getBoolean(welcomeScreenShownPref, false);
+
+        if (!welcomeScreenShown) {
+            new Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setMessage(R.string.message_alpha_warning)
+                    .setPositiveButton(
+                            R.string.ok, null)
+                    .show();
+            Editor editor = prefs.edit();
+            editor.putBoolean(welcomeScreenShownPref, true);
+            editor.commit(); // Very important to save the preference
+        }
     }
 }
