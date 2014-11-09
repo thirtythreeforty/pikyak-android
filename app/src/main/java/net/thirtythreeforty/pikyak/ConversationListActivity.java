@@ -1,5 +1,11 @@
 package net.thirtythreeforty.pikyak;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
@@ -8,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +24,8 @@ import com.squareup.otto.Subscribe;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
+
+import java.io.IOException;
 
 
 /**
@@ -41,8 +50,10 @@ public class ConversationListActivity
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
             SignInDialogFragment.Callbacks,
-            ImageDispatcherFragment.Callbacks
+            ImageDispatcherFragment.Callbacks,
+            AccountManagerCallback<Bundle>
 {
+    private static final String TAG = "ConversationListActivity";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -124,9 +135,14 @@ public class ConversationListActivity
                         .reloadConversationList();
                 return true;
             case R.id.action_settings:
-                getFragmentManager().beginTransaction()
-                        .add(mSignInDialogFragment, SIGNINDIALOGFRAGMENT_TAG)
-                        .commit();
+                AccountManager.get(this).addAccount(
+                        AccountAuthenticator.ACCOUNT_TYPE,
+                        AccountAuthenticator.AUTHTOKEN_TYPE,
+                        null,
+                        null,
+                        this,
+                        this,
+                        null);
                 return true;
         }
         return false;
@@ -175,6 +191,17 @@ public class ConversationListActivity
                 },
                 imagePath
         ));
+    }
+
+    @Override
+    public void run(AccountManagerFuture<Bundle> bundleAccountManagerFuture) {
+        try {
+            Bundle result = bundleAccountManagerFuture.getResult();
+        } catch(IOException|AuthenticatorException e) {
+            Log.wtf(TAG, e);
+        } catch(OperationCanceledException e) {
+            Log.i(TAG, "Account operation was cancelled.", e);
+        }
     }
 
     @Subscribe
