@@ -1,6 +1,5 @@
 package net.thirtythreeforty.pikyak;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
@@ -21,6 +20,7 @@ import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
 
+import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
@@ -49,9 +49,9 @@ public class ConversationListActivity
         implements
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
-            SignInDialogFragment.Callbacks,
             ImageDispatcherFragment.Callbacks,
-            AccountManagerCallback<Bundle>
+            AccountManagerCallback<Bundle>,
+            AuthorizationGetterFragment.Callbacks
 {
     private static final String TAG = "ConversationListActivity";
 
@@ -61,11 +61,13 @@ public class ConversationListActivity
      */
     private boolean mTwoPane;
 
-    private SignInDialogFragment mSignInDialogFragment;
-    private static final String SIGNINDIALOGFRAGMENT_TAG = "SignInDialogFragment";
-
     private ImageDispatcherFragment mImageDispatcherFragment;
     private static final String IMAGEDISPATCHER_TAG = "dispatcher";
+
+    private AuthorizationGetterFragment mAuthorizationGetterFragment;
+    private static final String AUTHGETTER_TAG = "authGetter";
+
+    private String mImagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,17 +90,18 @@ public class ConversationListActivity
                     .setActivateOnItemClick(true);
         }
 
-        // Special case here, this fragment is only attached when we want the dialog to appear.
-        mSignInDialogFragment = SignInDialogFragment.newInstance();
-
         if(savedInstanceState == null) {
             mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
+            mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
             fragmentManager.beginTransaction()
                     .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
+                    .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
                     .commit();
         } else {
             mImageDispatcherFragment = (ImageDispatcherFragment)fragmentManager
                     .findFragmentByTag(IMAGEDISPATCHER_TAG);
+            mAuthorizationGetterFragment = (AuthorizationGetterFragment)fragmentManager
+                    .findFragmentByTag(AUTHGETTER_TAG);
         }
 
         displayAlphaDialog();
@@ -177,20 +180,10 @@ public class ConversationListActivity
 
     @Override
     public void doUpload(String imagePath) {
-        BusProvider.getBus().post(new CreateConversationRequestEvent(
-                new AuthorizationRetriever() {
-                    @Override
-                    public String getUsername() {
-                        return "test";
-                    }
+        mImagePath = imagePath;
 
-                    @Override
-                    public String getPassword() {
-                        return "test";
-                    }
-                },
-                imagePath
-        ));
+        /** Will call {@link onGetAuthorization} with credentials when ready */
+        mAuthorizationGetterFragment.getAuthorization();
     }
 
     @Override
@@ -202,6 +195,14 @@ public class ConversationListActivity
         } catch(OperationCanceledException e) {
             Log.i(TAG, "Account operation was cancelled.", e);
         }
+    }
+
+    @Override
+    public void onGetAuthorization(AuthorizationRetriever authorizationRetriever) {
+        BusProvider.getBus().post(new CreateConversationRequestEvent(
+                authorizationRetriever,
+                mImagePath
+        ));
     }
 
     @Subscribe

@@ -57,7 +57,7 @@ public final class PikyakAPIService {
 
     public static interface AuthorizationRetriever {
         public String getUsername();
-        public String getPassword();
+        public String getAuthorization();
     }
 
     public static class APIErrorEvent {
@@ -89,7 +89,7 @@ public final class PikyakAPIService {
             registrationBody.email = requestEvent.authorizationRetriever.getUsername();
             // TODO GCM ID
             getAPI().register(
-                    computeAuthorization(requestEvent.authorizationRetriever),
+                    requestEvent.authorizationRetriever.getAuthorization(),
                     requestEvent.authorizationRetriever.getUsername(),
                     registrationBody,
                     new Callback<RegistrationResponseModel>() {
@@ -125,7 +125,7 @@ public final class PikyakAPIService {
         if(!mUnregistrationRequestInProgress) {
             mUnregistrationRequestInProgress = true;
             getAPI().unregister(
-                    computeAuthorization(requestEvent.authorizationRetriever),
+                    requestEvent.authorizationRetriever.getAuthorization(),
                     requestEvent.authorizationRetriever.getUsername(),
                     new Callback<UnregistrationResponseModel>() {
                         @Override
@@ -240,7 +240,7 @@ public final class PikyakAPIService {
     public void onCreateConversationRequest(final CreateConversationRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().createConversation(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 "",
                 getTypedFile(requestEvent.filename),
                 new Callback<CreatePostResponseModel>() {
@@ -274,7 +274,7 @@ public final class PikyakAPIService {
     public void onCreatePostRequest(final CreatePostRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().createPost(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 "",
                 getTypedFile(requestEvent.filename),
@@ -311,7 +311,7 @@ public final class PikyakAPIService {
         CreateVoteRequestBodyModel body = new CreateVoteRequestBodyModel();
         body.value = requestEvent.value;
         getAPI().createVote(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 body,
                 new Callback<CreateVoteResponseModel>() {
@@ -343,7 +343,7 @@ public final class PikyakAPIService {
     public void onDeleteVoteRequest(final DeleteVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().deleteVote(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 new Callback<DeleteVoteResponseModel>() {
                     @Override
@@ -374,7 +374,7 @@ public final class PikyakAPIService {
     public void onCreateBlockRequest(final CreateBlockRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().createBlock(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 new Callback<CreateBlockResponseModel>() {
                     @Override
@@ -405,7 +405,7 @@ public final class PikyakAPIService {
     public void onDeleteBlockRequest(final DeleteVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().deleteBlock(
-                computeAuthorization(requestEvent.authorizationRetriever),
+                requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 new Callback<DeleteBlockResponseModel>() {
                     @Override
@@ -423,9 +423,9 @@ public final class PikyakAPIService {
 
     // Utility methods
 
-    private static String computeAuthorization(AuthorizationRetriever a) {
+    public static String computeAuthorization(String username, String password) {
         return "Basic " + Base64.encodeToString(
-                (a.getUsername() + ":" + a.getPassword()).getBytes(Charset.forName("UTF-8")),
+                (username + ":" + password).getBytes(Charset.forName("UTF-8")),
                 Base64.NO_WRAP);
     }
 

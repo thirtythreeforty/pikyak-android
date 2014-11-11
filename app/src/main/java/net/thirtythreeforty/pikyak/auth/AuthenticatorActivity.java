@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.auth;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
@@ -10,6 +10,9 @@ import android.widget.EditText;
 
 import com.squareup.otto.Subscribe;
 
+import net.thirtythreeforty.pikyak.BusProvider;
+import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.APIErrorEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.RegistrationRequestEvent;
@@ -54,7 +57,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mPasswordEditText.setFocusable(false);
 
         final String username = mUsernameEditText.getText().toString();
-        final String password = mPasswordEditText.getText().toString();
+        final String authorization = PikyakAPIService.computeAuthorization(
+                username,
+                mPasswordEditText.getText().toString());
         BusProvider.getBus().post(new RegistrationRequestEvent(
                 new AuthorizationRetriever() {
                     @Override
@@ -63,8 +68,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     }
 
                     @Override
-                    public String getPassword() {
-                        return password;
+                    public String getAuthorization() {
+                        return authorization;
                     }
                 }));
     }

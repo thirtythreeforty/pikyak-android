@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.auth;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -8,6 +8,8 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
 
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public static final String ACCOUNT_TYPE = "net.thirtythreeforty.pikyak";
@@ -57,16 +59,18 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
         String authToken = am.peekAuthToken(account, authTokenType);
 
-//        // If there is a stored password, we can calculate the Basic authentication.
-//        String password = am.getPassword(account);
-//        if(!password.isEmpty()) {
-//            authToken = "Basic " + Base64.encodeToString(
-//                    (a.getUsername() + ":" + a.getPassword()).getBytes(Charset.forName("UTF-8")),
-//                    Base64.NO_WRAP);
-//        }
+        if(authToken == null || authToken.isEmpty()) {
+            String password = am.getPassword(account);
+            if(password != null && !password.isEmpty()) {
+                authToken = PikyakAPIService.computeAuthorization(
+                        account.name,
+                        password);
+                am.setAuthToken(account, AUTHTOKEN_TYPE, authToken);
+            }
+        }
 
         // If we have an authToken - we return it
-        if (!authToken.isEmpty()) {
+        if (!(authToken == null) && !authToken.isEmpty()) {
             final Bundle result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
             result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);

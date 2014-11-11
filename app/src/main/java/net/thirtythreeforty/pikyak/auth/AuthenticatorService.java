@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.auth;
 
 import android.app.Service;
 import android.content.Intent;
