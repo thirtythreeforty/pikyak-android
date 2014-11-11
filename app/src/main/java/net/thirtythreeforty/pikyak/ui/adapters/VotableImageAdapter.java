@@ -54,6 +54,7 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
 
         view.getImage().setImageResource(android.R.color.transparent);
         view.setScore(post.score);
+        view.setUserScore(post.user_score);
 
         // Picasso doesn't like loading an empty image
         final ImageView imageView = view.getImage();
