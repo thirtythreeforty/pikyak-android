@@ -12,16 +12,16 @@ import net.thirtythreeforty.pikyak.networking.PikyakAPIService.APIErrorEvent;
 
 public class PikyakApplication extends Application {
     private PikyakAPIService mPikyakAPIService;
-    private Bus mBus = BusProvider.getBus();
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         mPikyakAPIService = new PikyakAPIService();
-        mBus.register(mPikyakAPIService);
 
-        mBus.register(this); //listen for "global" events
+        Bus bus = BusProvider.getBus();
+        bus.register(mPikyakAPIService);
+        bus.register(this); //listen for "global" events
     }
 
     @Subscribe
