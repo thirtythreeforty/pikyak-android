@@ -1,7 +1,5 @@
 package net.thirtythreeforty.pikyak;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,7 +23,7 @@ import net.thirtythreeforty.pikyak.networking.model.ImageModel;
  * interface.
  */
 public class ConversationListFragment
-    extends Fragment
+    extends BaseFragment
     implements OnItemClickListener,
                OnRefreshListener,
                VotableImageAdapter.Callbacks
@@ -38,12 +36,6 @@ public class ConversationListFragment
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
@@ -51,27 +43,20 @@ public class ConversationListFragment
     private ListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
     public interface Callbacks {
         /**
          * Callback for when an item has been selected.
          */
         public void onItemSelected(int id);
     }
-
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
-     */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(int id) {
-        }
+        public void onItemSelected(int id) {}
     };
+    @Override
+    protected Callbacks getDefaultCallbacks() {
+        return sDummyCallbacks;
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -107,27 +92,6 @@ public class ConversationListFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
-    }
-
-
-    @Override
     public void onResume() {
         super.onResume();
         BusProvider.getBus().register(this);
@@ -156,7 +120,7 @@ public class ConversationListFragment
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ImageModel convPreview
                 = (ImageModel)parent.getAdapter().getItem(position);
-        mCallbacks.onItemSelected(convPreview.id);
+        ((Callbacks)mCallbacks).onItemSelected(convPreview.id);
     }
 
     @Override

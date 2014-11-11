@@ -1,6 +1,5 @@
 package net.thirtythreeforty.pikyak;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,8 @@ import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequest
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link ConversationDetailFragment}.
  */
-public class ConversationDetailActivity extends Activity
+public class ConversationDetailActivity
+        extends OttoActivity
         implements ConversationDetailFragment.Callbacks,
                    ImageDispatcherFragment.Callbacks,
                    AuthorizationGetterFragment.Callbacks

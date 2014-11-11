@@ -5,7 +5,6 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -45,7 +44,7 @@ import java.io.IOException;
  * to listen for item selections.
  */
 public class ConversationListActivity
-        extends Activity
+        extends OttoActivity
         implements
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
@@ -105,18 +104,6 @@ public class ConversationListActivity
         }
 
         displayAlphaDialog();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        BusProvider.getBus().unregister(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BusProvider.getBus().register(this);
     }
 
     @Override
