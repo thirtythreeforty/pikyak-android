@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.fragments.headless;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,6 +9,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
+
+import net.thirtythreeforty.pikyak.R;
 
 import java.io.File;
 import java.io.IOException;

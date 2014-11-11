@@ -1,12 +1,17 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import net.thirtythreeforty.pikyak.BusProvider;
+import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequestEvent;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
 
 
 /**
@@ -16,7 +21,7 @@ import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequest
  * in a {@link ConversationListActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link ConversationDetailFragment}.
+ * more than a {@link net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment}.
  */
 public class ConversationDetailActivity
         extends OttoActivity

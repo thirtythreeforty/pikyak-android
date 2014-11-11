@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,7 +11,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import net.thirtythreeforty.pikyak.BusProvider;
+import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
+import net.thirtythreeforty.pikyak.ui.adapters.ConversationListAdapter;
+import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
 
 /**
  * A list fragment representing a list of Conversations. This fragment

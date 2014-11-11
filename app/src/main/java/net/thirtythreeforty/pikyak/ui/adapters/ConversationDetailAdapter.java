@@ -1,9 +1,10 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.adapters;
 
 import android.content.Context;
 
 import com.squareup.otto.Subscribe;
 
+import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationResultEvent;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;

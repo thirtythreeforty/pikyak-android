@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.fragments.headless;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

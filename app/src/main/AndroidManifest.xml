@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="net.thirtythreeforty.pikyak.ConversationListActivity"
+            android:name=".ui.ConversationListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,9 +28,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.thirtythreeforty.pikyak.ConversationDetailActivity"
+            android:name=".ui.ConversationDetailActivity"
             android:label="@string/title_conversation_detail"
-            android:parentActivityName="net.thirtythreeforty.pikyak.ConversationListActivity" >
+            android:parentActivityName=".ui.ConversationListActivity" >
         </activity>
 
         <service

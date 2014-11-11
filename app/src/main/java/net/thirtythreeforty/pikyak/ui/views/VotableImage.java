@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.views;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import net.thirtythreeforty.pikyak.R;
 
 /**
  * A {@link FrameLayout} that provides an image to render into and vote counter.

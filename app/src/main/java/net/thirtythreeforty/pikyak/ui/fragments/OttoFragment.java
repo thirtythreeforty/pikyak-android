@@ -1,4 +1,6 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.fragments;
+
+import net.thirtythreeforty.pikyak.BusProvider;
 
 public abstract class OttoFragment extends BaseFragment {
 

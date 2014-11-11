@@ -1,7 +1,9 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+
+import net.thirtythreeforty.pikyak.BuildConfig;
 
 public abstract class BaseFragment extends Fragment {
     protected Object mCallbacks = getDefaultCallbacks();

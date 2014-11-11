@@ -1,4 +1,4 @@
-package net.thirtythreeforty.pikyak;
+package net.thirtythreeforty.pikyak.ui.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import net.thirtythreeforty.pikyak.BuildConfig;
+import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
 import java.util.ArrayList;
