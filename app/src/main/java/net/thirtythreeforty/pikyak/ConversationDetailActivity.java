@@ -21,12 +21,18 @@ import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequest
  */
 public class ConversationDetailActivity extends Activity
         implements ConversationDetailFragment.Callbacks,
-                   ImageDispatcherFragment.Callbacks
+                   ImageDispatcherFragment.Callbacks,
+                   AuthorizationGetterFragment.Callbacks
 {
     private static final String TAG = "ConversationDetailActivity";
 
     private ImageDispatcherFragment mImageDispatcherFragment;
     private static final String IMAGEDISPATCHER_TAG = "dispatcher";
+
+    private AuthorizationGetterFragment mAuthorizationGetterFragment;
+    private static final String AUTHGETTER_TAG = "authGetter";
+
+    private String mImagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +57,18 @@ public class ConversationDetailActivity extends Activity
             conversationFragment.setArguments(arguments);
 
             mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
+            mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
 
             getFragmentManager().beginTransaction()
                     .add(R.id.conversation_detail_container, conversationFragment)
                     .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
+                    .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
                     .commit();
         } else {
             mImageDispatcherFragment = (ImageDispatcherFragment)getFragmentManager()
                     .findFragmentByTag(IMAGEDISPATCHER_TAG);
+            mAuthorizationGetterFragment = (AuthorizationGetterFragment)getFragmentManager()
+                    .findFragmentByTag(AUTHGETTER_TAG);
         }
     }
 
@@ -82,20 +92,16 @@ public class ConversationDetailActivity extends Activity
 
     @Override
     public void doUpload(String imagePath) {
-        BusProvider.getBus().post(new CreatePostRequestEvent(
-                new AuthorizationRetriever() {
-                    @Override
-                    public String getUsername() {
-                        return "test";
-                    }
+        mImagePath = imagePath;
+        mAuthorizationGetterFragment.getAuthorization();
+    }
 
-                    @Override
-                    public String getPassword() {
-                        return "test";
-                    }
-                },
+    @Override
+    public void onGetAuthorization(AuthorizationRetriever authorizationRetriever) {
+        BusProvider.getBus().post(new CreatePostRequestEvent(
+                authorizationRetriever,
                 getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0),
-                imagePath
+                mImagePath
         ));
     }
 }
