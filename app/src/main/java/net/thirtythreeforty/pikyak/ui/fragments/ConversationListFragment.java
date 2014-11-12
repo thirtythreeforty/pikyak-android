@@ -27,7 +27,7 @@ import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
  * interface.
  */
 public class ConversationListFragment
-    extends BaseFragment
+    extends OttoFragment
     implements OnItemClickListener,
                OnRefreshListener,
                VotableImageAdapter.Callbacks
@@ -98,7 +98,6 @@ public class ConversationListFragment
     @Override
     public void onResume() {
         super.onResume();
-        BusProvider.getBus().register(this);
         BusProvider.getBus().register(mListView.getAdapter());
 
         reloadConversationList();
@@ -107,7 +106,6 @@ public class ConversationListFragment
     @Override
     public void onPause() {
         super.onPause();
-        BusProvider.getBus().unregister(this);
         BusProvider.getBus().unregister(mListView.getAdapter());
     }
 
