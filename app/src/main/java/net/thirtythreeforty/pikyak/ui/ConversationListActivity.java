@@ -115,7 +115,11 @@ public class ConversationListActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.conversation_list_activity, menu);
+        if(mTwoPane) {
+            inflater.inflate(R.menu.conversation_detail, menu);
+        }
+        inflater.inflate(R.menu.conversation_common, menu);
         return true;
     }
 

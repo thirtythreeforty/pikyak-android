@@ -80,7 +80,9 @@ public class ConversationDetailActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.conversation_detail_activity, menu);
         inflater.inflate(R.menu.conversation_detail, menu);
+        inflater.inflate(R.menu.conversation_common, menu);
         return true;
     }
 
