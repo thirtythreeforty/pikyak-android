@@ -2,9 +2,9 @@ package net.thirtythreeforty.pikyak.ui.views;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +15,7 @@ import net.thirtythreeforty.pikyak.R;
  * A {@link FrameLayout} that provides an image to render into and vote counter.
  * The embedded {@link ImageView} can be retrieved with the getImage() method.
  */
-public class VotableImage extends FrameLayout implements OnCheckedChangeListener {
+public class VotableImage extends FrameLayout implements OnClickListener {
 
     private final TextView mScoreTextView;
     private final CheckBox mUpvoteButton;
@@ -24,20 +24,12 @@ public class VotableImage extends FrameLayout implements OnCheckedChangeListener
     private Callbacks mCallbacks;
 
     public static interface Callbacks {
-        void onUpvote(VotableImage view);
-        void onDownvote(VotableImage view);
-        void onUnvote(VotableImage view);
+        void onVote(VotableImage view, int score);
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onUpvote(VotableImage view) {}
-
-        @Override
-        public void onDownvote(VotableImage view) {}
-
-        @Override
-        public void onUnvote(VotableImage view) {}
+        public void onVote(VotableImage view, int score) {}
     };
 
     public VotableImage(Context context, Callbacks callbacks) {
@@ -52,8 +44,8 @@ public class VotableImage extends FrameLayout implements OnCheckedChangeListener
         mDownvoteButton = (CheckBox)findViewById(R.id.downvoteButton);
         mImage = (ImageView)findViewById(R.id.image);
 
-        mUpvoteButton.setOnCheckedChangeListener(this);
-        mDownvoteButton.setOnCheckedChangeListener(this);
+        mUpvoteButton.setOnClickListener(this);
+        mDownvoteButton.setOnClickListener(this);
 
         mCallbacks = callbacks;
     }
@@ -76,15 +68,17 @@ public class VotableImage extends FrameLayout implements OnCheckedChangeListener
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-        if(!checked) {
-            mCallbacks.onUnvote(this);
-        } else if(compoundButton == mUpvoteButton) {
-            mCallbacks.onUpvote(this);
-            mDownvoteButton.setChecked(false);
-        } else if(compoundButton == mDownvoteButton) {
-            mCallbacks.onDownvote(this);
-            mUpvoteButton.setChecked(false);
+    public void onClick(View view) {
+        int score = 0;
+        if(mUpvoteButton.isChecked() || mDownvoteButton.isChecked()) {
+            if(view == mUpvoteButton) {
+                score = 1;
+                mDownvoteButton.setChecked(false);
+            } else if(view == mDownvoteButton) {
+                score = -1;
+                mUpvoteButton.setChecked(false);
+            }
         }
+        mCallbacks.onVote(this, score);
     }
 }

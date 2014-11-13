@@ -16,6 +16,8 @@ import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationListAdapter;
 import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -43,6 +45,9 @@ public class ConversationListFragment
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+
+    private AuthorizationGetterFragment mAuthorizationGetterFragment;
+    private static final String AUTHGETTER_TAG = "authGetter";
 
     private ListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -72,6 +77,21 @@ public class ConversationListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_conversation_list, container, false);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(savedInstanceState == null) {
+            mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
+            getFragmentManager().beginTransaction()
+                    .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
+                    .commit();
+        } else {
+            mAuthorizationGetterFragment = (AuthorizationGetterFragment)getFragmentManager()
+                    .findFragmentByTag(AUTHGETTER_TAG);
+        }
     }
 
     @Override
@@ -123,6 +143,12 @@ public class ConversationListFragment
         ImageModel convPreview
                 = (ImageModel)parent.getAdapter().getItem(position);
         ((Callbacks)mCallbacks).onItemSelected(view, convPreview.id);
+    }
+
+    @Override
+    public void onImageVote(VotableImage view, int score) {
+        // TODO fix the server API call
+        mAuthorizationGetterFragment.withAuthorization(new DoVote(0, score));
     }
 
     @Override

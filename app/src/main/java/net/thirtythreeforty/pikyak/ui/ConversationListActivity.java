@@ -28,9 +28,10 @@ import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationListFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
 
 import java.io.IOException;
@@ -58,8 +59,7 @@ public class ConversationListActivity
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
             ImageDispatcherFragment.Callbacks,
-            AccountManagerCallback<Bundle>,
-            AuthorizationGetterFragment.Callbacks
+            AccountManagerCallback<Bundle>
 {
     private static final String TAG = "ConversationListActivity";
 
@@ -75,7 +75,21 @@ public class ConversationListActivity
     private AuthorizationGetterFragment mAuthorizationGetterFragment;
     private static final String AUTHGETTER_TAG = "authGetter";
 
-    private String mImagePath;
+    private static class DoUpload implements RunnableWithAuthorization {
+        private final String imagePath;
+
+        public DoUpload(String imagePath) {
+            this.imagePath = imagePath;
+        }
+
+        @Override
+        public void onGotAuthorization(AuthorizationRetriever retriever) {
+            BusProvider.getBus().post(new CreateConversationRequestEvent(
+                    retriever,
+                    imagePath
+            ));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,10 +202,7 @@ public class ConversationListActivity
 
     @Override
     public void doUpload(String imagePath) {
-        mImagePath = imagePath;
-
-        /** Will call {@link onGetAuthorization} with credentials when ready */
-        mAuthorizationGetterFragment.getAuthorization();
+        mAuthorizationGetterFragment.withAuthorization(new DoUpload(imagePath));
     }
 
     @Override
@@ -203,14 +214,6 @@ public class ConversationListActivity
         } catch(OperationCanceledException e) {
             Log.i(TAG, "Account operation was cancelled.", e);
         }
-    }
-
-    @Override
-    public void onGetAuthorization(AuthorizationRetriever authorizationRetriever) {
-        BusProvider.getBus().post(new CreateConversationRequestEvent(
-                authorizationRetriever,
-                mImagePath
-        ));
     }
 
     @Subscribe

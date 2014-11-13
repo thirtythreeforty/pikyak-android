@@ -9,8 +9,9 @@ import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequestEvent;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
 
 
@@ -26,8 +27,7 @@ import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment
 public class ConversationDetailActivity
         extends OttoActivity
         implements ConversationDetailFragment.Callbacks,
-                   ImageDispatcherFragment.Callbacks,
-                   AuthorizationGetterFragment.Callbacks
+                   ImageDispatcherFragment.Callbacks
 {
     private static final String TAG = "ConversationDetailActivity";
 
@@ -37,7 +37,24 @@ public class ConversationDetailActivity
     private AuthorizationGetterFragment mAuthorizationGetterFragment;
     private static final String AUTHGETTER_TAG = "authGetter";
 
-    private String mImagePath;
+    private static class DoUpload implements RunnableWithAuthorization {
+        private final String imagePath;
+        private final int conversation_id;
+
+        public DoUpload(int conversation_id, String imagePath) {
+            this.imagePath = imagePath;
+            this.conversation_id = conversation_id;
+        }
+
+        @Override
+        public void onGotAuthorization(AuthorizationRetriever retriever) {
+            BusProvider.getBus().post(new CreatePostRequestEvent(
+                    retriever,
+                    conversation_id,
+                    imagePath
+            ));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,17 +115,8 @@ public class ConversationDetailActivity
     }
 
     @Override
-    public void doUpload(String imagePath) {
-        mImagePath = imagePath;
-        mAuthorizationGetterFragment.getAuthorization();
-    }
-
-    @Override
-    public void onGetAuthorization(AuthorizationRetriever authorizationRetriever) {
-        BusProvider.getBus().post(new CreatePostRequestEvent(
-                authorizationRetriever,
-                getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0),
-                mImagePath
-        ));
+    public void doUpload(final String imagePath) {
+        final int conversation_id = getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0);
+        mAuthorizationGetterFragment.withAuthorization(new DoUpload(conversation_id, imagePath));
     }
 }

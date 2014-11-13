@@ -17,13 +17,16 @@ import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 
 import java.util.ArrayList;
 
-abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
+abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
+        implements VotableImage.Callbacks
+{
     static final String TAG = "VotableImageAdapter";
 
     final LayoutInflater mInflater;
 
     public interface Callbacks {
         public void onRefreshCompleted(boolean success);
+        public void onImageVote(VotableImage view, int score);
     }
 
     protected Callbacks mCallbacks = null;
@@ -48,7 +51,7 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
     public View getView(int position, View convertView, ViewGroup parent) {
         final VotableImage view = (convertView instanceof VotableImage)
                 ? (VotableImage)convertView
-                : new VotableImage(getContext());
+                : new VotableImage(getContext(), this);
         boolean isNewView = view != convertView;
         final ImageModel post = getItem(position);
 
@@ -74,6 +77,11 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel> {
         }
 
         return view;
+    }
+
+    @Override
+    public void onVote(VotableImage view, int score) {
+        if(mCallbacks != null) mCallbacks.onImageVote(view, score);
     }
 
     private void doLoad(ImageView imageView, ImageModel post) {

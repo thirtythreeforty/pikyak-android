@@ -9,6 +9,9 @@ import android.widget.ListView;
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
+import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -19,7 +22,9 @@ import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ConversationDetailFragment extends BaseFragment {
+public class ConversationDetailFragment extends BaseFragment
+        implements VotableImageAdapter.Callbacks
+{
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -34,6 +39,9 @@ public class ConversationDetailFragment extends BaseFragment {
         return sDummyCallbacks;
     }
 
+    private AuthorizationGetterFragment mAuthorizationGetterFragment;
+    private static final String AUTHGETTER_TAG = "authGetter";
+
     private ListView mListView;
 
     /**
@@ -44,6 +52,21 @@ public class ConversationDetailFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(savedInstanceState == null) {
+            mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
+            getFragmentManager().beginTransaction()
+                    .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
+                    .commit();
+        } else {
+            mAuthorizationGetterFragment = (AuthorizationGetterFragment)getFragmentManager()
+                    .findFragmentByTag(AUTHGETTER_TAG);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_conversation_detail, container, false);
     }
@@ -51,10 +74,11 @@ public class ConversationDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mListView = (ListView)view.findViewById(R.id.listView);
-        mListView.setAdapter(new ConversationDetailAdapter(
+        ConversationDetailAdapter listAdapter = new ConversationDetailAdapter(
                 getActivity(),
-                getArguments().getInt(ARG_CONVERSATION_ID)));
-        // TODO open fullscreen image when touched?
+                getArguments().getInt(ARG_CONVERSATION_ID));
+        listAdapter.setCallbacks(this);
+        mListView.setAdapter(listAdapter);
     }
 
     @Override
@@ -70,6 +94,17 @@ public class ConversationDetailFragment extends BaseFragment {
         super.onPause();
 
         BusProvider.getBus().unregister(mListView.getAdapter());
+    }
+
+    @Override
+    public void onRefreshCompleted(boolean success) {}
+
+    @Override
+    public void onImageVote(VotableImage view, int score) {
+        mAuthorizationGetterFragment.withAuthorization(new DoVote(
+                getArguments().getInt(ARG_CONVERSATION_ID, 0),
+                score
+        ));
     }
 
     public void reloadConversation() {

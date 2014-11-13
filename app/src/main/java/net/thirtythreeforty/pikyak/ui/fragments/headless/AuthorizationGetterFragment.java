@@ -16,6 +16,8 @@ import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Random;
 
 public class AuthorizationGetterFragment extends Fragment
     implements AccountManagerCallback<Bundle>
@@ -24,14 +26,13 @@ public class AuthorizationGetterFragment extends Fragment
 
     private static final int REQUEST_ACCOUNT = 1;
 
-    public static interface Callbacks {
-        public void onGetAuthorization(AuthorizationRetriever authorizationRetriever);
+    public interface RunnableWithAuthorization {
+        public void onGotAuthorization(AuthorizationRetriever retriever);
     }
-    static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onGetAuthorization(AuthorizationRetriever authorizationRetriever) {}
-    };
-    private Callbacks mCallbacks = sDummyCallbacks;
+
+    private HashMap<Integer, RunnableWithAuthorization> intToFunctionMap;
+    private HashMap<AccountManagerFuture<Bundle>, RunnableWithAuthorization> futureToFunctionMap;
+    private static Random random = new Random();
 
     public static AuthorizationGetterFragment newInstance() {
         return new AuthorizationGetterFragment();
@@ -41,29 +42,12 @@ public class AuthorizationGetterFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        intToFunctionMap = new HashMap<>();
+        futureToFunctionMap = new HashMap<>();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        // Reset the active mCallbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
-    }
-
-    public void getAuthorization() {
+    public void withAuthorization(RunnableWithAuthorization runnable) {
         Intent intent = AccountManager.newChooseAccountIntent(
                 null,
                 null,
@@ -74,19 +58,26 @@ public class AuthorizationGetterFragment extends Fragment
                 null,
                 null
         );
-        startActivityForResult(intent, REQUEST_ACCOUNT);
+
+        int key = random.nextInt(Integer.MAX_VALUE - 1) + 1; // Exclude 0
+        intToFunctionMap.put(key, runnable);
+        startActivityForResult(intent, key);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ACCOUNT) {
+        if (intToFunctionMap.containsKey(requestCode)) {
+            RunnableWithAuthorization runnable = intToFunctionMap.get(requestCode);
+            intToFunctionMap.remove(requestCode);
+
             if(resultCode == Activity.RESULT_OK) {
                 String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
                 String accountType = data.getExtras().getString(AccountManager.KEY_ACCOUNT_TYPE);
                 Account account = new Account(accountName, accountType);
-                AccountManager.get(getActivity())
+                AccountManagerFuture<Bundle> future = AccountManager.get(getActivity())
                         .getAuthToken(account, AccountAuthenticator.AUTHTOKEN_TYPE,
                                 null, getActivity(), this, null);
+                futureToFunctionMap.put(future, runnable);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -99,7 +90,9 @@ public class AuthorizationGetterFragment extends Fragment
             Bundle result = bundleAccountManagerFuture.getResult();
             final String username = result.getString(AccountManager.KEY_ACCOUNT_NAME);
             final String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-            mCallbacks.onGetAuthorization(new AuthorizationRetriever() {
+            RunnableWithAuthorization runnable = futureToFunctionMap.get(bundleAccountManagerFuture);
+            futureToFunctionMap.remove(bundleAccountManagerFuture);
+            runnable.onGotAuthorization(new AuthorizationRetriever() {
                 @Override
                 public String getUsername() {
                     return username;
