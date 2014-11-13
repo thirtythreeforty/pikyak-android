@@ -107,7 +107,7 @@ public class ConversationDetailActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch(id) {
-            case R.id.action_add:
+            case R.id.action_reply:
                 mImageDispatcherFragment.takePicture();
                 return true;
         }
