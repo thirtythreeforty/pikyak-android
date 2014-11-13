@@ -51,11 +51,11 @@ public class ConversationListFragment
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(int id);
+        public void onItemSelected(View view, int id);
     }
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(int id) {}
+        public void onItemSelected(View view, int id) {}
     };
     @Override
     protected Callbacks getDefaultCallbacks() {
@@ -122,7 +122,7 @@ public class ConversationListFragment
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ImageModel convPreview
                 = (ImageModel)parent.getAdapter().getItem(position);
-        ((Callbacks)mCallbacks).onItemSelected(convPreview.id);
+        ((Callbacks)mCallbacks).onItemSelected(view, convPreview.id);
     }
 
     @Override

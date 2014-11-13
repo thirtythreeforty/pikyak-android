@@ -5,17 +5,20 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.ActivityOptions;
 import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -153,7 +156,7 @@ public class ConversationListActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(int id) {
+    public void onItemSelected(View view, int id) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -171,7 +174,15 @@ public class ConversationListActivity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ConversationDetailActivity.class);
             detailIntent.putExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, id);
-            startActivity(detailIntent);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Bundle options = ActivityOptions
+                        .makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight())
+                        .toBundle();
+                startActivity(detailIntent, options);
+            } else {
+                startActivity(detailIntent);
+            }
         }
     }
 
