@@ -402,7 +402,7 @@ public final class PikyakAPIService {
     public static class DeleteBlockResultEvent {
     }
     @Subscribe
-    public void onDeleteBlockRequest(final DeleteVoteRequestEvent requestEvent) {
+    public void onDeleteBlockRequest(final DeleteBlockRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().deleteBlock(
                 requestEvent.authorizationRetriever.getAuthorization(),
