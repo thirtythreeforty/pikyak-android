@@ -5,7 +5,7 @@ import android.app.Fragment;
 
 import net.thirtythreeforty.pikyak.BuildConfig;
 
-public abstract class BaseFragment extends Fragment {
+abstract class BaseFragment extends Fragment {
     protected Object mCallbacks = getDefaultCallbacks();
     protected abstract Object getDefaultCallbacks();
 

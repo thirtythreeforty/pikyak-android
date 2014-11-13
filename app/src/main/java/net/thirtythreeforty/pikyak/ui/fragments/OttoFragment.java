@@ -2,7 +2,7 @@ package net.thirtythreeforty.pikyak.ui.fragments;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 
-public abstract class OttoFragment extends BaseFragment {
+abstract class OttoFragment extends BaseFragment {
 
     @Override
     public void onResume() {

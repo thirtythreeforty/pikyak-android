@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 
-public abstract class OttoActivity extends Activity {
+abstract class OttoActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
