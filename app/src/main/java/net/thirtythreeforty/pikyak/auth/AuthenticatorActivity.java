@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.squareup.otto.Subscribe;
@@ -26,6 +27,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private EditText mUsernameEditText;
     private EditText mPasswordEditText;
+    private Button mLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         mPasswordEditText = (EditText)findViewById(R.id.passwordEditText);
         mUsernameEditText = (EditText)findViewById(R.id.usernameEditText);
+        mLoginButton = (Button)findViewById(R.id.signin_button);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     public void finishLogin(View v) {
         // Perform the actual registration here.  Disable actionables.
-        v.setEnabled(false);
+        mLoginButton.setEnabled(false);
         mUsernameEditText.setFocusable(false);
         mPasswordEditText.setFocusable(false);
 
@@ -72,6 +75,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                         return authorization;
                     }
                 }));
+    }
+
+    public void cancel(View v) {
+        finish();
     }
 
     @Subscribe
@@ -98,13 +105,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     @Subscribe
     public void onAPIError(APIErrorEvent errorEvent) {
         if(errorEvent.requestEvent instanceof RegistrationRequestEvent) {
-            findViewById(R.id.signin_button).setEnabled(true);
+            mLoginButton.setEnabled(true);
             mUsernameEditText.setFocusable(true);
-            mPasswordEditText.setFocusable(false);
+            mPasswordEditText.setFocusable(true);
         }
-    }
-
-    public void cancel(View v) {
-        finish();
     }
 }
