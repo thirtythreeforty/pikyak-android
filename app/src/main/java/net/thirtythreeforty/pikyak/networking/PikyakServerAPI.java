@@ -11,6 +11,7 @@ import net.thirtythreeforty.pikyak.networking.model.DeleteVoteResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
+import net.thirtythreeforty.pikyak.networking.model.UserResponseModel;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -27,6 +28,12 @@ import retrofit.mime.TypedFile;
 
 interface PikyakServerAPI {
     public static final String SORT_METHOD_HOT = "hot";
+
+    @GET("/users/{username}")
+    public void getUser(
+            @Header("Authorization") String auth,
+            @Path("username") String username,
+            Callback<UserResponseModel> callback);
 
     @PUT("/users/{username}")
     public void register(

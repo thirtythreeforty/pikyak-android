@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ui.ConversationListActivity"
+            android:name="net.thirtythreeforty.pikyak.ui.ConversationListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,13 +28,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ConversationDetailActivity"
+            android:name="net.thirtythreeforty.pikyak.ui.ConversationDetailActivity"
             android:label="@string/title_conversation_detail"
-            android:parentActivityName=".ui.ConversationListActivity" >
+            android:parentActivityName="net.thirtythreeforty.pikyak.ui.ConversationListActivity" >
         </activity>
 
         <service
-            android:name=".auth.AuthenticatorService"
+            android:name="net.thirtythreeforty.pikyak.auth.AuthenticatorService"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -46,9 +46,17 @@
         </service>
 
         <activity
-            android:name=".auth.AuthenticatorActivity"
-            android:theme="@android:style/Theme.Holo.Light.DialogWhenLarge.NoActionBar"
-            android:excludeFromRecents="true" />
+            android:name="net.thirtythreeforty.pikyak.auth.AuthenticatorActivity"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Holo.Light.DialogWhenLarge.NoActionBar" />
+        <activity
+            android:name="net.thirtythreeforty.pikyak.ui.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="net.thirtythreeforty.pikyak.ui.ConversationListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.thirtythreeforty.pikyak.ui.ConversationListActivity" />
+        </activity>
     </application>
 
 </manifest>

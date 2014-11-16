@@ -24,8 +24,6 @@ public class AuthorizationGetterFragment extends Fragment
 {
     private static final String TAG = "AccountChooserFragment";
 
-    private static final int REQUEST_ACCOUNT = 1;
-
     public interface RunnableWithAuthorization {
         public void onGotAuthorization(AuthorizationRetriever retriever);
     }

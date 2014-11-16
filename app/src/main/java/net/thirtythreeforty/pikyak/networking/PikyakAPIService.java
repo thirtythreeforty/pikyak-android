@@ -1,5 +1,7 @@
 package net.thirtythreeforty.pikyak.networking;
 
+import android.app.Application;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 
@@ -18,12 +20,14 @@ import net.thirtythreeforty.pikyak.networking.model.DeleteVoteResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
+import net.thirtythreeforty.pikyak.networking.model.UserResponseModel;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
+import retrofit.Endpoint;
 import retrofit.RestAdapter;
 import retrofit.RestAdapter.Builder;
 import retrofit.RetrofitError;
@@ -36,18 +40,36 @@ public final class PikyakAPIService {
 
     public static final String SORT_METHOD_HOT = PikyakServerAPI.SORT_METHOD_HOT;
 
-    private static final String PIKYAK_SERVER = "http://104.131.167.43:5000/";
-    // Connection timeout in seconds
+    private static final String PIKYAK_SERVER = "http://104.131.167.43:%s/";
+    private static final String PIKYAK_DEFAULT_PORT = "5000";
+    private static final String PREFERENCE_SERVER_PORT_KEY = "pref_server_port";
     private static final int CONNECT_TIMEOUT_SEC = 5;
 
-    private static PikyakServerAPI pikyakServerAPI = null;
-    private static PikyakServerAPI getAPI() {
+    private Application application;
+    public PikyakAPIService(Application application) {
+        this.application = application;
+    }
+
+    private PikyakServerAPI pikyakServerAPI = null;
+    private PikyakServerAPI getAPI() {
         if(pikyakServerAPI == null) {
             OkHttpClient okHttpClient = new OkHttpClient();
             okHttpClient.setConnectTimeout(CONNECT_TIMEOUT_SEC, TimeUnit.SECONDS);
 
             RestAdapter restAdapter = new Builder()
-                    .setEndpoint(PIKYAK_SERVER)
+                    .setEndpoint(new Endpoint() {
+                        @Override
+                        public String getUrl() {
+                            String port = PreferenceManager.getDefaultSharedPreferences(application)
+                                    .getString(PREFERENCE_SERVER_PORT_KEY, PIKYAK_DEFAULT_PORT);
+                            return String.format(PIKYAK_SERVER, port);
+                        }
+
+                        @Override
+                        public String getName() {
+                            return "default"; // ??
+                        }
+                    })
                     .setClient(new OkClient(okHttpClient))
                     .build();
             pikyakServerAPI = restAdapter.create(PikyakServerAPI.class);
@@ -68,6 +90,42 @@ public final class PikyakAPIService {
             this.error = error;
             this.requestEvent = requestEvent;
         }
+    }
+
+    public static class GetUserRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+
+        public GetUserRequestEvent(AuthorizationRetriever authorizationRetriever) {
+            this.authorizationRetriever = authorizationRetriever;
+        }
+    }
+    public static class GetUserResultEvent {
+        public String user_id;
+        public boolean is_moderator;
+
+        public GetUserResultEvent(String user_id, boolean is_moderator) {
+            this.user_id = user_id;
+            this.is_moderator = is_moderator;
+        }
+    }
+    @Subscribe
+    public void onGetUserRequest(final GetUserRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().getUser(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.authorizationRetriever.getUsername(),
+                new Callback<UserResponseModel>() {
+                    @Override
+                    public void success(UserResponseModel userResponse, Response response) {
+                        BusProvider.getBus().post(new GetUserResultEvent(userResponse.user_id, userResponse.is_moderator));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(new APIErrorEvent(error, requestEvent));
+                    }
+                }
+        );
     }
 
     public static class RegistrationRequestEvent {

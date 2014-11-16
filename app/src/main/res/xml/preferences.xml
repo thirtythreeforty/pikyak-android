@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <net.thirtythreeforty.pikyak.ui.views.NoDialogSummariedEditTextPreference
+        android:title="@string/preference_current_account"
+        android:summary="%s"
+        android:key="pref_accounts" />
+    <net.thirtythreeforty.pikyak.ui.views.SummariedEditTextPreference
+        android:key="pref_server_port"
+        android:title="@string/preference_server_port"
+        android:summary="%s"
+        android:numeric="integer"
+        android:defaultValue="5000" />
+</PreferenceScreen>

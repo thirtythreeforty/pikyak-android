@@ -17,7 +17,7 @@ public class PikyakApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        mPikyakAPIService = new PikyakAPIService();
+        mPikyakAPIService = new PikyakAPIService(this);
 
         Bus bus = BusProvider.getBus();
         bus.register(mPikyakAPIService);

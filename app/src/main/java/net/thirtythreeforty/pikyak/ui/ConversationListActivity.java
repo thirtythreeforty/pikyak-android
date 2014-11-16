@@ -1,6 +1,5 @@
 package net.thirtythreeforty.pikyak.ui;
 
-import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
@@ -24,7 +23,6 @@ import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
-import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
@@ -94,6 +92,9 @@ public class ConversationListActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         setContentView(R.layout.activity_conversation_list);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -152,14 +153,7 @@ public class ConversationListActivity
                         .reloadConversationList();
                 return true;
             case R.id.action_settings:
-                AccountManager.get(this).addAccount(
-                        AccountAuthenticator.ACCOUNT_TYPE,
-                        AccountAuthenticator.AUTHTOKEN_TYPE,
-                        null,
-                        null,
-                        this,
-                        this,
-                        null);
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
         }
         return false;
