@@ -52,8 +52,10 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if(preference.equals(defaultAccountPreference)) {
+            String defaultAccount = defaultAccountPreference.getText();
+            if(defaultAccount == null) defaultAccount = "";
             Intent intent = AccountManager.newChooseAccountIntent(
-                    new Account(defaultAccountPreference.getText(), AccountAuthenticator.ACCOUNT_TYPE),
+                    new Account(defaultAccount, AccountAuthenticator.ACCOUNT_TYPE),
                     null,
                     new String[]{AccountAuthenticator.ACCOUNT_TYPE},
                     true,
