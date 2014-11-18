@@ -36,6 +36,7 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
 
         if(BuildConfig.DEBUG) {
             Picasso.with(getContext()).setIndicatorsEnabled(true);
+            Picasso.with(getContext()).setLoggingEnabled(true);
         }
     }
 

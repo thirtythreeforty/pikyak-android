@@ -2,12 +2,12 @@ package net.thirtythreeforty.pikyak.ui.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -47,7 +47,7 @@ public class ConversationListFragment
     private AuthorizationGetterFragment mAuthorizationGetterFragment;
     private static final String AUTHGETTER_TAG = "authGetter";
 
-    private ListView mListView;
+    private AbsListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public interface Callbacks {
@@ -91,7 +91,7 @@ public class ConversationListFragment
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(Color.rgb(0x5D, 0x40, 0x37));
 
-        mListView = (ListView)mSwipeRefreshLayout.findViewById(R.id.listView);
+        mListView = (AbsListView)mSwipeRefreshLayout.findViewById(R.id.listView);
         ConversationListAdapter listAdapter = new ConversationListAdapter(getActivity());
         listAdapter.setCallbacks(this);
         mListView.setAdapter(listAdapter);
