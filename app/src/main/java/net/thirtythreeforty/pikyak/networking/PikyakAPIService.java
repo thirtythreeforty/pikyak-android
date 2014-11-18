@@ -352,12 +352,12 @@ public final class PikyakAPIService {
 
     public static class CreateVoteRequestEvent {
         public AuthorizationRetriever authorizationRetriever;
-        public int conversation_id;
+        public int post_id;
         public int value;
 
-        public CreateVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id, int value) {
+        public CreateVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id, int value) {
             this.authorizationRetriever = authorizationRetriever;
-            this.conversation_id = conversation_id;
+            this.post_id = post_id;
             this.value = value;
         }
     }
@@ -370,7 +370,7 @@ public final class PikyakAPIService {
         body.value = requestEvent.value;
         getAPI().createVote(
                 requestEvent.authorizationRetriever.getAuthorization(),
-                requestEvent.conversation_id,
+                requestEvent.post_id,
                 body,
                 new Callback<CreateVoteResponseModel>() {
                     @Override

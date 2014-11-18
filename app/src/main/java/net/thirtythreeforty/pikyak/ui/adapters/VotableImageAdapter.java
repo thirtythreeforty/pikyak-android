@@ -4,16 +4,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
 import net.thirtythreeforty.pikyak.BuildConfig;
 import net.thirtythreeforty.pikyak.R;
-import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
+import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 import java.util.ArrayList;
 
@@ -26,7 +24,7 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
 
     public interface Callbacks {
         public void onRefreshCompleted(boolean success);
-        public void onImageVote(VotableImage view, int score);
+        public void onImageVote(VotableImage view, int user_score);
     }
 
     protected Callbacks mCallbacks = null;
@@ -49,31 +47,14 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final VotableImage view = (convertView instanceof VotableImage)
-                ? (VotableImage)convertView
-                : new VotableImage(getContext(), this);
-        boolean isNewView = view != convertView;
         final ImageModel post = getItem(position);
 
-        view.getImage().setImageResource(android.R.color.transparent);
-        view.setScore(post.score);
-        view.setUserScore(post.user_score);
-
-        // Picasso doesn't like loading an empty image
-        final ImageView imageView = view.getImage();
-        if(!post.image.isEmpty() && isNewView) {
-            imageView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                // Wait until layout to load image, TODO load asynchronously?
-                @Override
-                public void onGlobalLayout() {
-                    // Ensure we call this only once
-                    imageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
-                    doLoad(imageView, post);
-                }
-            });
+        VotableImage view;
+        if(convertView instanceof VotableImage) {
+            view = (VotableImage)convertView;
+            view.setImageModel(post);
         } else {
-            doLoad(imageView, post);
+            view = new VotableImage(getContext(), post, this);
         }
 
         return view;
@@ -82,13 +63,5 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
     @Override
     public void onVote(VotableImage view, int score) {
         if(mCallbacks != null) mCallbacks.onImageVote(view, score);
-    }
-
-    private void doLoad(ImageView imageView, ImageModel post) {
-        Picasso.with(getContext())
-                .load(post.image)
-                .resize(imageView.getWidth(), 0)
-                .error(R.drawable.ic_action_refresh)
-                .into(imageView);
     }
 }

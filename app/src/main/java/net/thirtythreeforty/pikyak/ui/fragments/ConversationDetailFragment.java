@@ -9,9 +9,6 @@ import android.widget.ListView;
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
-import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
-import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -22,9 +19,7 @@ import net.thirtythreeforty.pikyak.ui.views.VotableImage;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ConversationDetailFragment extends BaseFragment
-        implements VotableImageAdapter.Callbacks
-{
+public class ConversationDetailFragment extends VotableImageListFragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -39,9 +34,6 @@ public class ConversationDetailFragment extends BaseFragment
         return sDummyCallbacks;
     }
 
-    private AuthorizationGetterFragment mAuthorizationGetterFragment;
-    private static final String AUTHGETTER_TAG = "authGetter";
-
     private ListView mListView;
 
     /**
@@ -49,21 +41,6 @@ public class ConversationDetailFragment extends BaseFragment
      * fragment (e.g. upon screen orientation changes).
      */
     public ConversationDetailFragment() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if(savedInstanceState == null) {
-            mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
-            getFragmentManager().beginTransaction()
-                    .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
-                    .commit();
-        } else {
-            mAuthorizationGetterFragment = (AuthorizationGetterFragment)getFragmentManager()
-                    .findFragmentByTag(AUTHGETTER_TAG);
-        }
     }
 
     @Override
@@ -98,14 +75,6 @@ public class ConversationDetailFragment extends BaseFragment
 
     @Override
     public void onRefreshCompleted(boolean success) {}
-
-    @Override
-    public void onImageVote(VotableImage view, int score) {
-        mAuthorizationGetterFragment.withAuthorization(new DoVote(
-                getArguments().getInt(ARG_CONVERSATION_ID, 0),
-                score
-        ));
-    }
 
     public void reloadConversation() {
         ((ConversationDetailAdapter)mListView.getAdapter()).reload();
