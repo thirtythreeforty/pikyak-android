@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "net.thirtythreeforty.pikyak"
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
         versionName "0.1.0"
     }
