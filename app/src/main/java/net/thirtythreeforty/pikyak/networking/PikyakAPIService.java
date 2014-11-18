@@ -350,32 +350,32 @@ public final class PikyakAPIService {
         );
     }
 
-    public static class CreateVoteRequestEvent {
+    public static class CreatePostVoteRequestEvent {
         public AuthorizationRetriever authorizationRetriever;
         public int post_id;
         public int value;
 
-        public CreateVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id, int value) {
+        public CreatePostVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id, int value) {
             this.authorizationRetriever = authorizationRetriever;
             this.post_id = post_id;
             this.value = value;
         }
     }
-    public static class CreateVoteResultEvent {
+    public static class CreatePostVoteResultEvent {
     }
     @Subscribe
-    public void onCreateVoteRequest(final CreateVoteRequestEvent requestEvent) {
+    public void onCreatePostVoteRequest(final CreatePostVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
         CreateVoteRequestBodyModel body = new CreateVoteRequestBodyModel();
         body.value = requestEvent.value;
-        getAPI().createVote(
+        getAPI().createPostVote(
                 requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.post_id,
                 body,
                 new Callback<CreateVoteResponseModel>() {
                     @Override
                     public void success(CreateVoteResponseModel createVoteResponse, Response response) {
-                        BusProvider.getBus().post(logResult(new CreateVoteResultEvent()));
+                        BusProvider.getBus().post(logResult(new CreatePostVoteResultEvent()));
                     }
 
                     @Override
@@ -386,27 +386,94 @@ public final class PikyakAPIService {
         );
     }
 
-    public static class DeleteVoteRequestEvent {
+    public static class DeletePostVoteRequestEvent {
         public AuthorizationRetriever authorizationRetriever;
         public int conversation_id;
 
-        public DeleteVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id) {
+        public DeletePostVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id) {
             this.authorizationRetriever = authorizationRetriever;
             this.conversation_id = conversation_id;
         }
     }
-    public static class DeleteVoteResultEvent {
+    public static class DeletePostVoteResultEvent {
     }
     @Subscribe
-    public void onDeleteVoteRequest(final DeleteVoteRequestEvent requestEvent) {
+    public void onDeletePostVoteRequest(final DeletePostVoteRequestEvent requestEvent) {
         logRequest(requestEvent);
-        getAPI().deleteVote(
+        getAPI().deletePostVote(
                 requestEvent.authorizationRetriever.getAuthorization(),
                 requestEvent.conversation_id,
                 new Callback<DeleteVoteResponseModel>() {
                     @Override
                     public void success(DeleteVoteResponseModel deleteVoteResponse, Response response) {
-                        BusProvider.getBus().post(logResult(new DeleteVoteResultEvent()));
+                        BusProvider.getBus().post(logResult(new DeletePostVoteResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class CreateConversationVoteRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int post_id;
+        public int value;
+
+        public CreateConversationVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id, int value) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.post_id = post_id;
+            this.value = value;
+        }
+    }
+    public static class CreateConversationVoteResultEvent {
+    }
+    @Subscribe
+    public void onCreateConversationVoteRequest(final CreateConversationVoteRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        CreateVoteRequestBodyModel body = new CreateVoteRequestBodyModel();
+        body.value = requestEvent.value;
+        getAPI().createConversationVote(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.post_id,
+                body,
+                new Callback<CreateVoteResponseModel>() {
+                    @Override
+                    public void success(CreateVoteResponseModel createVoteResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new CreateConversationVoteResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class DeleteConversationVoteRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int conversation_id;
+
+        public DeleteConversationVoteRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.conversation_id = conversation_id;
+        }
+    }
+    public static class DeleteConversationVoteResultEvent {
+    }
+    @Subscribe
+    public void onDeleteConversationVoteRequest(final DeleteConversationVoteRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().deleteConversationVote(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.conversation_id,
+                new Callback<DeleteVoteResponseModel>() {
+                    @Override
+                    public void success(DeleteVoteResponseModel deleteVoteResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new DeleteConversationVoteResultEvent()));
                     }
 
                     @Override

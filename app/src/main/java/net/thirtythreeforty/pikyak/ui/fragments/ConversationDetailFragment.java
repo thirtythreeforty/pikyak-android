@@ -8,7 +8,11 @@ import android.widget.ListView;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostVoteRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.DeletePostVoteRequestEvent;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -75,6 +79,32 @@ public class ConversationDetailFragment extends VotableImageListFragment {
 
     @Override
     public void onRefreshCompleted(boolean success) {}
+
+
+    private static class DoVote implements RunnableWithAuthorization {
+        private final int conversation_id;
+        private final int value;
+
+        public DoVote(int conversation_id, int value) {
+            this.conversation_id = conversation_id;
+            this.value = value;
+        }
+
+        @Override
+        public void onGotAuthorization(AuthorizationRetriever retriever) {
+            Object request;
+            if(value != 0) {
+                request = new CreatePostVoteRequestEvent(retriever, conversation_id, value);
+            } else {
+                request = new DeletePostVoteRequestEvent(retriever, conversation_id);
+            }
+            BusProvider.getBus().post(request);
+        }
+    }
+    @Override
+    protected RunnableWithAuthorization getVotingRunnable(int id, int user_score) {
+        return new DoVote(id, user_score);
+    }
 
     public void reloadConversation() {
         ((ConversationDetailAdapter)mListView.getAdapter()).reload();

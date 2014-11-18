@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
+import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 abstract class VotableImageListFragment extends OttoFragment implements VotableImageAdapter.Callbacks {
@@ -27,9 +28,10 @@ abstract class VotableImageListFragment extends OttoFragment implements VotableI
 
     @Override
     public void onImageVote(VotableImage view, int user_score) {
-        mAuthorizationGetterFragment.withAuthorization(new DoVote(
-                view.getImageModel().id,
-                user_score
-        ));
+        mAuthorizationGetterFragment.withAuthorization(
+                getVotingRunnable(view.getImageModel().id, user_score)
+        );
     }
+
+    protected abstract RunnableWithAuthorization getVotingRunnable(int id, int user_score);
 }

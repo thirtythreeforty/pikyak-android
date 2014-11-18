@@ -78,8 +78,23 @@ interface PikyakServerAPI {
             @Part("image") TypedFile image,
             Callback<CreatePostResponseModel> callback);
 
+    @PUT("/conversations/{conversation_id}/user_score")
+    public void createConversationVote(
+            @Header("Authorization") String auth,
+            @Path("conversation_id") int conversation_id,
+            @Body CreateVoteRequestBodyModel body,
+            Callback<CreateVoteResponseModel> callback
+    );
+
+    @DELETE("/conversations/{conversation_id}/user_score")
+    public void deleteConversationVote(
+            @Header("Authorization") String auth,
+            @Path("conversation_id") int conversation_id,
+            Callback<DeleteVoteResponseModel> callback
+    );
+
     @PUT("/posts/{post_id}/user_score")
-    public void createVote(
+    public void createPostVote(
             @Header("Authorization") String auth,
             @Path("post_id") int post_id,
             @Body CreateVoteRequestBodyModel body,
@@ -87,7 +102,7 @@ interface PikyakServerAPI {
     );
 
     @DELETE("/posts/{post_id}/user_score")
-    public void deleteVote(
+    public void deletePostVote(
             @Header("Authorization") String auth,
             @Path("post_id") int post_id,
             Callback<DeleteVoteResponseModel> callback
