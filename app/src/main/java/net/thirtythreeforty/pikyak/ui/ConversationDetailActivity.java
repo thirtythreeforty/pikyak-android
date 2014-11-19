@@ -31,6 +31,8 @@ public class ConversationDetailActivity
 {
     private static final String TAG = "ConversationDetailActivity";
 
+    public static final String ARG_CONVERSATION_ID = "conversation_id";
+
     private ImageDispatcherFragment mImageDispatcherFragment;
     private static final String IMAGEDISPATCHER_TAG = "dispatcher";
 
@@ -74,7 +76,7 @@ public class ConversationDetailActivity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putInt(ConversationDetailFragment.ARG_CONVERSATION_ID,
-                    getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0));
+                    getIntent().getIntExtra(ARG_CONVERSATION_ID, 0));
             ConversationDetailFragment conversationFragment = new ConversationDetailFragment();
             conversationFragment.setArguments(arguments);
 

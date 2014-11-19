@@ -1,9 +1,5 @@
 package net.thirtythreeforty.pikyak.ui;
 
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.app.ActivityOptions;
 import android.app.AlertDialog.Builder;
 import android.app.FragmentManager;
@@ -13,7 +9,6 @@ import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,8 +26,6 @@ import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationListFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
-
-import java.io.IOException;
 
 
 /**
@@ -56,8 +49,7 @@ public class ConversationListActivity
         implements
             ConversationListFragment.Callbacks,
             ConversationDetailFragment.Callbacks,
-            ImageDispatcherFragment.Callbacks,
-            AccountManagerCallback<Bundle>
+            ImageDispatcherFragment.Callbacks
 {
     private static final String TAG = "ConversationListActivity";
 
@@ -181,7 +173,7 @@ public class ConversationListActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, ConversationDetailActivity.class);
-            detailIntent.putExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, id);
+            detailIntent.putExtra(ConversationDetailActivity.ARG_CONVERSATION_ID, id);
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Bundle options = ActivityOptions
@@ -197,17 +189,6 @@ public class ConversationListActivity
     @Override
     public void doUpload(String imagePath) {
         mAuthorizationGetterFragment.withChooseAuthorization(new DoUpload(imagePath));
-    }
-
-    @Override
-    public void run(AccountManagerFuture<Bundle> bundleAccountManagerFuture) {
-        try {
-            Bundle result = bundleAccountManagerFuture.getResult();
-        } catch(IOException|AuthenticatorException e) {
-            Log.wtf(TAG, e);
-        } catch(OperationCanceledException e) {
-            Log.i(TAG, "Account operation was cancelled.", e);
-        }
     }
 
     @Subscribe
