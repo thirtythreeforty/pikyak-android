@@ -1,6 +1,5 @@
 package net.thirtythreeforty.pikyak.ui.fragments.headless;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
@@ -12,7 +11,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunWithAuthorizationRequestEvent;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 
 import java.io.IOException;
@@ -23,10 +25,6 @@ public class AuthorizationGetterFragment extends Fragment
     implements AccountManagerCallback<Bundle>
 {
     private static final String TAG = "AccountChooserFragment";
-
-    public interface RunnableWithAuthorization {
-        public void onGotAuthorization(AuthorizationRetriever retriever);
-    }
 
     private HashMap<Integer, RunnableWithAuthorization> intToFunctionMap;
     private HashMap<AccountManagerFuture<Bundle>, RunnableWithAuthorization> futureToFunctionMap;
@@ -45,7 +43,7 @@ public class AuthorizationGetterFragment extends Fragment
         futureToFunctionMap = new HashMap<>();
     }
 
-    public void withAuthorization(RunnableWithAuthorization runnable) {
+    public void withChooseAuthorization(RunnableWithAuthorization runnable) {
         Intent intent = AccountManager.newChooseAccountIntent(
                 null,
                 null,
@@ -69,13 +67,11 @@ public class AuthorizationGetterFragment extends Fragment
             intToFunctionMap.remove(requestCode);
 
             if(resultCode == Activity.RESULT_OK) {
-                String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
-                String accountType = data.getExtras().getString(AccountManager.KEY_ACCOUNT_TYPE);
-                Account account = new Account(accountName, accountType);
-                AccountManagerFuture<Bundle> future = AccountManager.get(getActivity())
-                        .getAuthToken(account, AccountAuthenticator.AUTHTOKEN_TYPE,
-                                null, getActivity(), this, null);
-                futureToFunctionMap.put(future, runnable);
+                BusProvider.getBus().post(new RunWithAuthorizationRequestEvent(
+                        runnable,
+                        data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME),
+                        data.getExtras().getString(AccountManager.KEY_ACCOUNT_TYPE)
+                ));
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

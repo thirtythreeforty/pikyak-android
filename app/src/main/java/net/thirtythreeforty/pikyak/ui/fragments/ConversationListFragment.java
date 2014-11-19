@@ -14,13 +14,12 @@ import android.widget.ListView;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationVoteRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.DeleteConversationVoteRequestEvent;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationListAdapter;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
@@ -47,9 +46,6 @@ public class ConversationListFragment
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    private AuthorizationGetterFragment mAuthorizationGetterFragment;
-    private static final String AUTHGETTER_TAG = "authGetter";
 
     private AbsListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;

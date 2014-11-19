@@ -25,7 +25,7 @@ public class ConversationDetailAdapter extends VotableImageAdapter {
 
     @Override
     public void reload() {
-        BusProvider.getBus().post(new GetConversationRequestEvent(mConversationID, 0));
+        BusProvider.getBus().post(new GetConversationRequestEvent(null, mConversationID, 0));
     }
 
     @Subscribe

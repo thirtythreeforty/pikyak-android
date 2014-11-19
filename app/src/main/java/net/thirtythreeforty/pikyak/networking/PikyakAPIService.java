@@ -203,11 +203,13 @@ public final class PikyakAPIService {
     }
 
     public static class GetConversationListRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
         public int first_conversation;
         public String sort;
         public String geo;
 
-        public GetConversationListRequestEvent(int first_conversation, String sort, String geo) {
+        public GetConversationListRequestEvent(AuthorizationRetriever authorizationRetriever, int first_conversation, String sort, String geo) {
+            this.authorizationRetriever = authorizationRetriever;
             this.first_conversation = first_conversation;
             this.sort = sort;
             this.geo = geo;
@@ -227,6 +229,8 @@ public final class PikyakAPIService {
         if(!mGetConversationListRequestInProgress) {
             mGetConversationListRequestInProgress = true;
             getAPI().getConversationList(
+                    requestEvent.authorizationRetriever != null
+                            ? requestEvent.authorizationRetriever.getAuthorization() : null,
                     requestEvent.first_conversation,
                     requestEvent.sort,
                     requestEvent.geo,
@@ -248,12 +252,14 @@ public final class PikyakAPIService {
     }
 
     public static class GetConversationRequestEvent {
-        public int first_conversation;
+        public AuthorizationRetriever authorizationRetriever;
         public int conversation_id;
+        public int first_conversation;
 
-        public GetConversationRequestEvent(int conversation_id, int first_conversation) {
-            this.first_conversation = first_conversation;
+        public GetConversationRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id, int first_conversation) {
+            this.authorizationRetriever = authorizationRetriever;
             this.conversation_id = conversation_id;
+            this.first_conversation = first_conversation;
         }
     }
     public static class GetConversationResultEvent {
@@ -267,6 +273,8 @@ public final class PikyakAPIService {
     public void onGetConversationRequest(final GetConversationRequestEvent requestEvent) {
         logRequest(requestEvent);
         getAPI().getConversation(
+                requestEvent.authorizationRetriever != null
+                        ? requestEvent.authorizationRetriever.getAuthorization() : null,
                 requestEvent.conversation_id,
                 requestEvent.first_conversation,
                 new Callback<ConversationModel>() {

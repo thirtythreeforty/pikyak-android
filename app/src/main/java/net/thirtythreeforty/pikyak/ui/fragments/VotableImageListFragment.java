@@ -2,9 +2,9 @@ package net.thirtythreeforty.pikyak.ui.fragments;
 
 import android.os.Bundle;
 
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 abstract class VotableImageListFragment extends OttoFragment implements VotableImageAdapter.Callbacks {
@@ -14,6 +14,7 @@ abstract class VotableImageListFragment extends OttoFragment implements VotableI
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         if(savedInstanceState == null) {
             mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
@@ -28,7 +29,7 @@ abstract class VotableImageListFragment extends OttoFragment implements VotableI
 
     @Override
     public void onImageVote(VotableImage view, int user_score) {
-        mAuthorizationGetterFragment.withAuthorization(
+        mAuthorizationGetterFragment.withChooseAuthorization(
                 getVotingRunnable(view.getImageModel().id, user_score)
         );
     }

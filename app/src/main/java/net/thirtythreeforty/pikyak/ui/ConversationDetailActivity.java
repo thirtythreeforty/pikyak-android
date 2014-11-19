@@ -7,11 +7,11 @@ import android.view.MenuItem;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostRequestEvent;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
 
 
@@ -117,6 +117,6 @@ public class ConversationDetailActivity
     @Override
     public void doUpload(final String imagePath) {
         final int conversation_id = getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0);
-        mAuthorizationGetterFragment.withAuthorization(new DoUpload(conversation_id, imagePath));
+        mAuthorizationGetterFragment.withChooseAuthorization(new DoUpload(conversation_id, imagePath));
     }
 }

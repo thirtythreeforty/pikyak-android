@@ -50,6 +50,7 @@ interface PikyakServerAPI {
 
     @GET("/conversations")
     public void getConversationList(
+            @Header("Authorization") String auth,
             @Query("first") int first_conversation,
             @Query("sort") String sort_method,
             @Query("geo") String lat_and_long,
@@ -57,6 +58,7 @@ interface PikyakServerAPI {
 
     @GET("/conversations/{conversation_id}")
     public void getConversation(
+            @Header("Authorization") String auth,
             @Path("conversation_id") int conversation_id,
             @Query("first") int first_post,
             Callback<ConversationModel> callback);

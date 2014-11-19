@@ -23,6 +23,7 @@ public class ConversationListAdapter extends VotableImageAdapter {
 
     public void reload() {
         BusProvider.getBus().post(new GetConversationListRequestEvent(
+                null,
                 0,
                 PikyakAPIService.SORT_METHOD_HOT,
                 ""));

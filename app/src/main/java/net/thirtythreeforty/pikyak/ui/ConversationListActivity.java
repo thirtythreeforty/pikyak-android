@@ -23,13 +23,13 @@ import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationResultEvent;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationDetailFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.ConversationListFragment;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.fragments.headless.ImageDispatcherFragment;
 
 import java.io.IOException;
@@ -196,7 +196,7 @@ public class ConversationListActivity
 
     @Override
     public void doUpload(String imagePath) {
-        mAuthorizationGetterFragment.withAuthorization(new DoUpload(imagePath));
+        mAuthorizationGetterFragment.withChooseAuthorization(new DoUpload(imagePath));
     }
 
     @Override

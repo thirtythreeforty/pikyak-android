@@ -8,11 +8,11 @@ import android.widget.ListView;
 
 import net.thirtythreeforty.pikyak.BusProvider;
 import net.thirtythreeforty.pikyak.R;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostVoteRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.DeletePostVoteRequestEvent;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
-import net.thirtythreeforty.pikyak.ui.fragments.headless.AuthorizationGetterFragment.RunnableWithAuthorization;
 
 /**
  * A list fragment representing a list of Conversations. This fragment
