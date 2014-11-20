@@ -15,7 +15,7 @@ import net.thirtythreeforty.pikyak.ui.views.VotableImage;
 
 import java.util.ArrayList;
 
-abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
+public abstract class VotableImageAdapter extends ArrayAdapter<ImageModel>
         implements VotableImage.Callbacks
 {
     static final String TAG = "VotableImageAdapter";
@@ -25,6 +25,7 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
     public interface Callbacks {
         public void onRefreshCompleted(boolean success);
         public void onImageVote(VotableImage view, int user_score);
+        public void onImageFlag(VotableImage view, boolean flag);
     }
 
     protected Callbacks mCallbacks = null;
@@ -64,5 +65,10 @@ abstract public class VotableImageAdapter extends ArrayAdapter<ImageModel>
     @Override
     public void onVote(VotableImage view, int score) {
         if(mCallbacks != null) mCallbacks.onImageVote(view, score);
+    }
+
+    @Override
+    public void onFlag(VotableImage view, boolean flag) {
+        if(mCallbacks != null) mCallbacks.onImageFlag(view, flag);
     }
 }

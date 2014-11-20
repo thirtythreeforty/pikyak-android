@@ -8,6 +8,7 @@ import net.thirtythreeforty.pikyak.networking.model.CreateVoteRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.DeleteBlockResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.DeleteVoteResponseModel;
+import net.thirtythreeforty.pikyak.networking.model.FlagResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
@@ -108,6 +109,34 @@ interface PikyakServerAPI {
             @Header("Authorization") String auth,
             @Path("post_id") int post_id,
             Callback<DeleteVoteResponseModel> callback
+    );
+
+    @PUT("/posts/{post_id}/flag")
+    public void flagPost(
+            @Header("Authorization") String auth,
+            @Path("post_id") int post_id,
+            Callback<FlagResponseModel> callback
+    );
+
+    @DELETE("/posts/{post_id}/flag")
+    public void unflagPost(
+            @Header("Authorization") String auth,
+            @Path("post_id") int post_id,
+            Callback<FlagResponseModel> callback
+    );
+
+    @PUT("/conversations/{conversation_id}/flag")
+    public void flagConversation(
+            @Header("Authorization") String auth,
+            @Path("conversation_id") int conversation_id,
+            Callback<FlagResponseModel> callback
+    );
+
+    @DELETE("/conversations/{conversation_id}/flag")
+    public void unflagConversation(
+            @Header("Authorization") String auth,
+            @Path("conversation_id") int conversation_id,
+            Callback<FlagResponseModel> callback
     );
 
     @PUT("/posts/{post_id}/block")

@@ -34,7 +34,7 @@ public class AuthorizationGetterFragment extends Fragment
         intToFunctionMap = new HashMap<>();
     }
 
-    public void withDefaultAuthorization(RunnableWithAuthorization runnable) {
+    public void withMandatoryAuthorization(RunnableWithAuthorization runnable) {
         String defaultAccountName = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString("pref_default_account", "");
         if(defaultAccountName.isEmpty()) {

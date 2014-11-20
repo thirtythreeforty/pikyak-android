@@ -17,6 +17,7 @@ import net.thirtythreeforty.pikyak.networking.model.CreateVoteRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.CreateVoteResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.DeleteBlockResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.DeleteVoteResponseModel;
+import net.thirtythreeforty.pikyak.networking.model.FlagResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationRequestBodyModel;
 import net.thirtythreeforty.pikyak.networking.model.RegistrationResponseModel;
 import net.thirtythreeforty.pikyak.networking.model.UnregistrationResponseModel;
@@ -482,6 +483,130 @@ public final class PikyakAPIService {
                     @Override
                     public void success(DeleteVoteResponseModel deleteVoteResponse, Response response) {
                         BusProvider.getBus().post(logResult(new DeleteConversationVoteResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class FlagPostRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int post_id;
+
+        public FlagPostRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.post_id = post_id;
+        }
+    }
+    public static class FlagPostResultEvent {
+    }
+    @Subscribe
+    public void onFlagPostRequest(final FlagPostRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().flagPost(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.post_id,
+                new Callback<FlagResponseModel>() {
+                    @Override
+                    public void success(FlagResponseModel flagResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new FlagPostResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class UnflagPostRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int post_id;
+
+        public UnflagPostRequestEvent(AuthorizationRetriever authorizationRetriever, int post_id) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.post_id = post_id;
+        }
+    }
+    public static class UnflagPostResultEvent {
+    }
+    @Subscribe
+    public void onUnflagPostRequest(final UnflagPostRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().unflagPost(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.post_id,
+                new Callback<FlagResponseModel>() {
+                    @Override
+                    public void success(FlagResponseModel flagResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new UnflagPostResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class FlagConversationRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int conversation_id;
+
+        public FlagConversationRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.conversation_id = conversation_id;
+        }
+    }
+    public static class FlagConversationResultEvent {
+    }
+    @Subscribe
+    public void onFlagConversationRequest(final FlagConversationRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().flagConversation(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.conversation_id,
+                new Callback<FlagResponseModel>() {
+                    @Override
+                    public void success(FlagResponseModel flagResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new FlagConversationResultEvent()));
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        BusProvider.getBus().post(logResult(new APIErrorEvent(error, requestEvent)));
+                    }
+                }
+        );
+    }
+
+    public static class UnflagConversationRequestEvent {
+        public AuthorizationRetriever authorizationRetriever;
+        public int conversation_id;
+
+        public UnflagConversationRequestEvent(AuthorizationRetriever authorizationRetriever, int conversation_id) {
+            this.authorizationRetriever = authorizationRetriever;
+            this.conversation_id = conversation_id;
+        }
+    }
+    public static class UnflagConversationResultEvent {
+    }
+    @Subscribe
+    public void onUnflagConversationRequest(final UnflagConversationRequestEvent requestEvent) {
+        logRequest(requestEvent);
+        getAPI().unflagConversation(
+                requestEvent.authorizationRetriever.getAuthorization(),
+                requestEvent.conversation_id,
+                new Callback<FlagResponseModel>() {
+                    @Override
+                    public void success(FlagResponseModel flagResponse, Response response) {
+                        BusProvider.getBus().post(logResult(new UnflagConversationResultEvent()));
                     }
 
                     @Override

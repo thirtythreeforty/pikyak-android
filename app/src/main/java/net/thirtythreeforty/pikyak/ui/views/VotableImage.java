@@ -26,6 +26,7 @@ public class VotableImage extends FrameLayout implements OnClickListener {
     private final TextView mScoreTextView;
     private final CheckBox mUpvoteButton;
     private final CheckBox mDownvoteButton;
+    private final CheckBox mFlagButton;
     private final ImageView mImage;
     private ImageModel mImageModel;
     private Callbacks mCallbacks;
@@ -33,11 +34,14 @@ public class VotableImage extends FrameLayout implements OnClickListener {
 
     public static interface Callbacks {
         void onVote(VotableImage view, int score);
+        void onFlag(VotableImage view, boolean flag);
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
         public void onVote(VotableImage view, int score) {}
+        @Override
+        public void onFlag(VotableImage view, boolean flag) {}
     };
 
     public VotableImage(Context context, ImageModel image, Callbacks callbacks) {
@@ -50,10 +54,12 @@ public class VotableImage extends FrameLayout implements OnClickListener {
         mScoreTextView = (TextView)findViewById(R.id.scoreTextView);
         mUpvoteButton = (CheckBox)findViewById(R.id.upvoteButton);
         mDownvoteButton = (CheckBox)findViewById(R.id.downvoteButton);
+        mFlagButton = (CheckBox)findViewById(R.id.flagButton);
         mImage = (ImageView)findViewById(R.id.image);
 
         mUpvoteButton.setOnClickListener(this);
         mDownvoteButton.setOnClickListener(this);
+        mFlagButton.setOnClickListener(this);
 
         mCallbacks = callbacks;
 
@@ -63,16 +69,20 @@ public class VotableImage extends FrameLayout implements OnClickListener {
     @Override
     public void onClick(View view) {
         int score = 0;
-        if(mUpvoteButton.isChecked() || mDownvoteButton.isChecked()) {
-            if(view == mUpvoteButton) {
-                score = 1;
-                mDownvoteButton.setChecked(false);
-            } else if(view == mDownvoteButton) {
-                score = -1;
-                mUpvoteButton.setChecked(false);
+        if(view == mUpvoteButton || view == mDownvoteButton) {
+            if(mUpvoteButton.isChecked() || mDownvoteButton.isChecked()) {
+                if(view == mUpvoteButton) {
+                    score = 1;
+                    mDownvoteButton.setChecked(false);
+                } else {
+                    score = -1;
+                    mUpvoteButton.setChecked(false);
+                }
             }
+            mCallbacks.onVote(this, score);
+        } else if(view == mFlagButton) {
+            mCallbacks.onFlag(this, mFlagButton.isChecked());
         }
-        mCallbacks.onVote(this, score);
     }
 
     @Override

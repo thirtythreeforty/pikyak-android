@@ -18,6 +18,8 @@ import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAutho
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreateConversationVoteRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.DeleteConversationVoteRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.FlagConversationRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.UnflagConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.model.ImageModel;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationListAdapter;
 
@@ -161,6 +163,32 @@ public class ConversationListFragment
     @Override
     protected RunnableWithAuthorization getVotingRunnable(int id, int user_score) {
         return new DoVote(id, user_score);
+    }
+
+
+    private static class DoFlag implements RunnableWithAuthorization {
+        private final int conversation_id;
+        private final boolean value;
+
+        public DoFlag(int conversation_id, boolean value) {
+            this.conversation_id = conversation_id;
+            this.value = value;
+        }
+
+        @Override
+        public void onGotAuthorization(AuthorizationRetriever retriever) {
+            Object request;
+            if(value) {
+                request = new FlagConversationRequestEvent(retriever, conversation_id);
+            } else {
+                request = new UnflagConversationRequestEvent(retriever, conversation_id);
+            }
+            BusProvider.getBus().post(request);
+        }
+    }
+    @Override
+    protected RunnableWithAuthorization getFlaggingRunnable(int id, boolean flag) {
+        return new DoFlag(id, flag);
     }
 
     /**

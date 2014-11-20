@@ -195,7 +195,7 @@ public class ConversationListActivity
     @Override
     public void doUpload(String imagePath) {
         if(mPictureIsForReply) {
-            mAuthorizationGetterFragment.withDefaultAuthorization(
+            mAuthorizationGetterFragment.withMandatoryAuthorization(
                     new ConversationDetailActivity.DoUpload(
                             getFragmentManager().findFragmentById(R.id.conversation_detail_container)
                                     .getArguments().getInt(ConversationDetailActivity.ARG_CONVERSATION_ID),
@@ -203,7 +203,7 @@ public class ConversationListActivity
                     )
             );
         } else {
-            mAuthorizationGetterFragment.withDefaultAuthorization(new DoUpload(imagePath));
+            mAuthorizationGetterFragment.withMandatoryAuthorization(new DoUpload(imagePath));
         }
     }
 

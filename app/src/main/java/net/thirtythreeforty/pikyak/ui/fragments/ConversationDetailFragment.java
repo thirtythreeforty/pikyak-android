@@ -12,6 +12,8 @@ import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAutho
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.CreatePostVoteRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.DeletePostVoteRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.FlagPostRequestEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.UnflagPostRequestEvent;
 import net.thirtythreeforty.pikyak.ui.adapters.ConversationDetailAdapter;
 
 /**
@@ -82,11 +84,11 @@ public class ConversationDetailFragment extends VotableImageListFragment {
 
 
     private static class DoVote implements RunnableWithAuthorization {
-        private final int conversation_id;
+        private final int post_id;
         private final int value;
 
-        public DoVote(int conversation_id, int value) {
-            this.conversation_id = conversation_id;
+        public DoVote(int post_id, int value) {
+            this.post_id = post_id;
             this.value = value;
         }
 
@@ -94,9 +96,9 @@ public class ConversationDetailFragment extends VotableImageListFragment {
         public void onGotAuthorization(AuthorizationRetriever retriever) {
             Object request;
             if(value != 0) {
-                request = new CreatePostVoteRequestEvent(retriever, conversation_id, value);
+                request = new CreatePostVoteRequestEvent(retriever, post_id, value);
             } else {
-                request = new DeletePostVoteRequestEvent(retriever, conversation_id);
+                request = new DeletePostVoteRequestEvent(retriever, post_id);
             }
             BusProvider.getBus().post(request);
         }
@@ -104,6 +106,32 @@ public class ConversationDetailFragment extends VotableImageListFragment {
     @Override
     protected RunnableWithAuthorization getVotingRunnable(int id, int user_score) {
         return new DoVote(id, user_score);
+    }
+
+
+    private static class DoFlag implements RunnableWithAuthorization {
+        private final int post_id;
+        private final boolean value;
+
+        public DoFlag(int post_id, boolean value) {
+            this.post_id = post_id;
+            this.value = value;
+        }
+
+        @Override
+        public void onGotAuthorization(AuthorizationRetriever retriever) {
+            Object request;
+            if(value) {
+                request = new FlagPostRequestEvent(retriever, post_id);
+            } else {
+                request = new UnflagPostRequestEvent(retriever, post_id);
+            }
+            BusProvider.getBus().post(request);
+        }
+    }
+    @Override
+    protected RunnableWithAuthorization getFlaggingRunnable(int id, boolean flag) {
+        return new DoFlag(id, flag);
     }
 
     public void reloadConversation() {

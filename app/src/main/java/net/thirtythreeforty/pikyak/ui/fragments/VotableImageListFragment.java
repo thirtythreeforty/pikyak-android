@@ -1,6 +1,7 @@
 package net.thirtythreeforty.pikyak.ui.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.ui.adapters.VotableImageAdapter;
@@ -29,10 +30,18 @@ abstract class VotableImageListFragment extends OttoFragment implements VotableI
 
     @Override
     public void onImageVote(VotableImage view, int user_score) {
-        mAuthorizationGetterFragment.withDefaultAuthorization(
+        mAuthorizationGetterFragment.withMandatoryAuthorization(
                 getVotingRunnable(view.getImageModel().id, user_score)
         );
     }
 
+    @Override
+    public void onImageFlag(VotableImage view, boolean flag) {
+        mAuthorizationGetterFragment.withMandatoryAuthorization(
+                getFlaggingRunnable(view.getImageModel().id, flag)
+        );
+    }
+
     protected abstract RunnableWithAuthorization getVotingRunnable(int id, int user_score);
+    protected abstract RunnableWithAuthorization getFlaggingRunnable(int id, boolean flag);
 }

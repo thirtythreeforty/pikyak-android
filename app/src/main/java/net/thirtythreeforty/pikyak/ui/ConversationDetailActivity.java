@@ -134,6 +134,6 @@ public class ConversationDetailActivity
     @Override
     public void doUpload(final String imagePath) {
         final int conversation_id = getIntent().getIntExtra(ConversationDetailFragment.ARG_CONVERSATION_ID, 0);
-        mAuthorizationGetterFragment.withDefaultAuthorization(new DoUpload(conversation_id, imagePath));
+        mAuthorizationGetterFragment.withMandatoryAuthorization(new DoUpload(conversation_id, imagePath));
     }
 }
