@@ -3,7 +3,8 @@
     <net.thirtythreeforty.pikyak.ui.views.NoDialogSummariedEditTextPreference
         android:title="@string/preference_current_account"
         android:summary="%s"
-        android:key="pref_accounts" />
+        android:defaultValue=""
+        android:key="pref_default_account" />
     <net.thirtythreeforty.pikyak.ui.views.SummariedEditTextPreference
         android:key="pref_server_port"
         android:title="@string/preference_server_port"

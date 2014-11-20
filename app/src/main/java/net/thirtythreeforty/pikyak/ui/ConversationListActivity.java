@@ -188,7 +188,7 @@ public class ConversationListActivity
 
     @Override
     public void doUpload(String imagePath) {
-        mAuthorizationGetterFragment.withChooseAuthorization(new DoUpload(imagePath));
+        mAuthorizationGetterFragment.withDefaultAuthorization(new DoUpload(imagePath));
     }
 
     @Subscribe

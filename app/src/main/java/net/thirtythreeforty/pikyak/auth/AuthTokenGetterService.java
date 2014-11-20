@@ -19,12 +19,12 @@ import java.io.IOException;
 public class AuthTokenGetterService {
     private static final String TAG = "AuthTokenGetterService";
 
-    public static class RunWithAuthorizationRequestEvent {
+    public static class RunWithOptionalAuthorizationRequestEvent {
         public RunnableWithAuthorization runnable;
         public String accountName;
         public String accountType;
 
-        public RunWithAuthorizationRequestEvent(RunnableWithAuthorization runnable, String accountName, String accountType) {
+        public RunWithOptionalAuthorizationRequestEvent(RunnableWithAuthorization runnable, String accountName, String accountType) {
             this.runnable = runnable;
             this.accountName = accountName;
             this.accountType = accountType;
@@ -42,9 +42,29 @@ public class AuthTokenGetterService {
     }
 
     @Subscribe
-    public void onAuthTokenGetRequest(RunWithAuthorizationRequestEvent requestEvent) {
-        final RunnableWithAuthorization runnable = requestEvent.runnable;
+    public void onAuthTokenGetRequest(RunWithOptionalAuthorizationRequestEvent requestEvent) {
         final String accountName = requestEvent.accountName;
+        final RunnableWithAuthorization runnable = requestEvent.runnable;
+
+        if(accountName == null || accountName.isEmpty()) {
+            Log.d(TAG, "Running request without authorization (accountName = " + accountName + ")");
+            // Do the request with no authorization.  Hopefully it's not required!
+            runnable.onGotAuthorization(new AuthorizationRetriever() {
+                @Override
+                public String getUsername() {
+                    return null;
+                }
+
+                @Override
+                public String getAuthorization() {
+                    return null;
+                }
+            });
+            return;
+        }
+
+        Log.d(TAG, "Attempting to get authorization for account " + accountName);
+
         final String accountType = requestEvent.accountType;
         Account account = new Account(accountName, accountType);
         AccountManager.get(application)

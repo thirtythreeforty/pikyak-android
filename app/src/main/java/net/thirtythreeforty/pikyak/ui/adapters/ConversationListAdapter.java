@@ -1,12 +1,17 @@
 package net.thirtythreeforty.pikyak.ui.adapters;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.BusProvider;
+import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunWithOptionalAuthorizationRequestEvent;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.APIErrorEvent;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationListResultEvent;
 import net.thirtythreeforty.pikyak.networking.model.ConversationListModel;
@@ -22,11 +27,23 @@ public class ConversationListAdapter extends VotableImageAdapter {
     }
 
     public void reload() {
-        BusProvider.getBus().post(new GetConversationListRequestEvent(
-                null,
-                0,
-                PikyakAPIService.SORT_METHOD_HOT,
-                ""));
+        BusProvider.getBus().post(
+                new RunWithOptionalAuthorizationRequestEvent(new RunnableWithAuthorization() {
+                    @Override
+                    public void onGotAuthorization(AuthorizationRetriever retriever) {
+                        BusProvider.getBus().post(new GetConversationListRequestEvent(
+                                retriever,
+                                0,
+                                PikyakAPIService.SORT_METHOD_HOT,
+                                ""));
+                    }
+                },
+                PreferenceManager
+                    .getDefaultSharedPreferences(getContext())
+                    .getString("pref_default_account", ""),
+                AccountAuthenticator.ACCOUNT_TYPE)
+        );
+
     }
 
     @Subscribe

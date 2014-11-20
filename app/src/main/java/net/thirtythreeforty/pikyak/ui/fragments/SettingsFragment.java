@@ -34,7 +34,7 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
 
         addPreferencesFromResource(R.xml.preferences);
 
-        defaultAccountPreference = (EditTextPreference)getPreferenceScreen().findPreference("pref_accounts");
+        defaultAccountPreference = (EditTextPreference)getPreferenceScreen().findPreference("pref_default_account");
         defaultAccountPreference.setOnPreferenceClickListener(this);
     }
 
@@ -52,10 +52,13 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if(preference.equals(defaultAccountPreference)) {
-            String defaultAccount = defaultAccountPreference.getText();
-            if(defaultAccount == null) defaultAccount = "";
+            String defaultAccountName = defaultAccountPreference.getText();
+            Account defaultAccount;
+            if(defaultAccountName == null || defaultAccountName.isEmpty()) defaultAccount = null;
+            else defaultAccount = new Account(defaultAccountName, AccountAuthenticator.ACCOUNT_TYPE);
+
             Intent intent = AccountManager.newChooseAccountIntent(
-                    new Account(defaultAccount, AccountAuthenticator.ACCOUNT_TYPE),
+                    defaultAccount,
                     null,
                     new String[]{AccountAuthenticator.ACCOUNT_TYPE},
                     true,

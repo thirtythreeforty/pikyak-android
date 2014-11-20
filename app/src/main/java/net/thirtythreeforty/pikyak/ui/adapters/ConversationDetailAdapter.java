@@ -1,10 +1,15 @@
 package net.thirtythreeforty.pikyak.ui.adapters;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.squareup.otto.Subscribe;
 
 import net.thirtythreeforty.pikyak.BusProvider;
+import net.thirtythreeforty.pikyak.auth.AccountAuthenticator;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunWithOptionalAuthorizationRequestEvent;
+import net.thirtythreeforty.pikyak.auth.AuthTokenGetterService.RunnableWithAuthorization;
+import net.thirtythreeforty.pikyak.networking.PikyakAPIService.AuthorizationRetriever;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationRequestEvent;
 import net.thirtythreeforty.pikyak.networking.PikyakAPIService.GetConversationResultEvent;
 import net.thirtythreeforty.pikyak.networking.model.ConversationModel;
@@ -25,7 +30,18 @@ public class ConversationDetailAdapter extends VotableImageAdapter {
 
     @Override
     public void reload() {
-        BusProvider.getBus().post(new GetConversationRequestEvent(null, mConversationID, 0));
+        BusProvider.getBus().post(new RunWithOptionalAuthorizationRequestEvent(
+                new RunnableWithAuthorization() {
+                    @Override
+                    public void onGotAuthorization(AuthorizationRetriever retriever) {
+                        BusProvider.getBus().post(new GetConversationRequestEvent(
+                                retriever, mConversationID, 0
+                        ));
+                    }
+                },
+                PreferenceManager.getDefaultSharedPreferences(getContext()).getString("pref_default_account",""),
+                AccountAuthenticator.ACCOUNT_TYPE
+        ));
     }
 
     @Subscribe

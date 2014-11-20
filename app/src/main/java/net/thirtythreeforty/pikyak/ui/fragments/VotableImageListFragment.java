@@ -29,7 +29,7 @@ abstract class VotableImageListFragment extends OttoFragment implements VotableI
 
     @Override
     public void onImageVote(VotableImage view, int user_score) {
-        mAuthorizationGetterFragment.withChooseAuthorization(
+        mAuthorizationGetterFragment.withDefaultAuthorization(
                 getVotingRunnable(view.getImageModel().id, user_score)
         );
     }
