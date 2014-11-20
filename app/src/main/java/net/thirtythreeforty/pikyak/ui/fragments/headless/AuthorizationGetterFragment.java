@@ -1,7 +1,6 @@
 package net.thirtythreeforty.pikyak.ui.fragments.headless;
 
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -21,7 +20,6 @@ public class AuthorizationGetterFragment extends Fragment
     private static final String TAG = "AccountChooserFragment";
 
     private HashMap<Integer, RunnableWithAuthorization> intToFunctionMap;
-    private HashMap<AccountManagerFuture<Bundle>, RunnableWithAuthorization> futureToFunctionMap;
     private static Random random = new Random();
 
     public static AuthorizationGetterFragment newInstance() {
@@ -34,7 +32,6 @@ public class AuthorizationGetterFragment extends Fragment
         setRetainInstance(true);
 
         intToFunctionMap = new HashMap<>();
-        futureToFunctionMap = new HashMap<>();
     }
 
     public void withDefaultAuthorization(RunnableWithAuthorization runnable) {

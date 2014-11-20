@@ -1,5 +1,7 @@
 package net.thirtythreeforty.pikyak.ui;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +41,9 @@ public class ConversationDetailActivity
     private AuthorizationGetterFragment mAuthorizationGetterFragment;
     private static final String AUTHGETTER_TAG = "authGetter";
 
-    private static class DoUpload implements RunnableWithAuthorization {
+    ConversationDetailFragment mConversationDetailFragment;
+
+    static class DoUpload implements RunnableWithAuthorization {
         private final String imagePath;
         private final int conversation_id;
 
@@ -71,28 +75,33 @@ public class ConversationDetailActivity
         // (e.g. when rotating the screen from portrait to landscape).
         // In this case, the fragment will automatically be re-added
         // to its container so we don't need to manually add it.
+
+        final FragmentManager fragmentManager = getFragmentManager();
+
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putInt(ConversationDetailFragment.ARG_CONVERSATION_ID,
                     getIntent().getIntExtra(ARG_CONVERSATION_ID, 0));
-            ConversationDetailFragment conversationFragment = new ConversationDetailFragment();
-            conversationFragment.setArguments(arguments);
+            mConversationDetailFragment = new ConversationDetailFragment();
+            mConversationDetailFragment.setArguments(arguments);
 
             mImageDispatcherFragment = ImageDispatcherFragment.newInstance();
             mAuthorizationGetterFragment = AuthorizationGetterFragment.newInstance();
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.conversation_detail_container, conversationFragment)
+                    .add(R.id.conversation_detail_container, mConversationDetailFragment)
                     .add(mImageDispatcherFragment, IMAGEDISPATCHER_TAG)
                     .add(mAuthorizationGetterFragment, AUTHGETTER_TAG)
                     .commit();
         } else {
-            mImageDispatcherFragment = (ImageDispatcherFragment)getFragmentManager()
+            mImageDispatcherFragment = (ImageDispatcherFragment)fragmentManager
                     .findFragmentByTag(IMAGEDISPATCHER_TAG);
-            mAuthorizationGetterFragment = (AuthorizationGetterFragment)getFragmentManager()
+            mAuthorizationGetterFragment = (AuthorizationGetterFragment)fragmentManager
                     .findFragmentByTag(AUTHGETTER_TAG);
+            mConversationDetailFragment = (ConversationDetailFragment)fragmentManager
+                    .findFragmentById(R.id.conversation_detail_container);
         }
     }
 
@@ -111,6 +120,12 @@ public class ConversationDetailActivity
         switch(id) {
             case R.id.action_reply:
                 mImageDispatcherFragment.takePicture();
+                return true;
+            case R.id.action_refresh:
+                mConversationDetailFragment.reloadConversation();
+                return true;
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

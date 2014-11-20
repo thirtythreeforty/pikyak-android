@@ -61,6 +61,7 @@ public class ConversationListActivity
 
     private ImageDispatcherFragment mImageDispatcherFragment;
     private static final String IMAGEDISPATCHER_TAG = "dispatcher";
+    private boolean mPictureIsForReply;
 
     private AuthorizationGetterFragment mAuthorizationGetterFragment;
     private static final String AUTHGETTER_TAG = "authGetter";
@@ -137,6 +138,11 @@ public class ConversationListActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_add:
+                mPictureIsForReply = false;
+                mImageDispatcherFragment.takePicture();
+                return true;
+            case R.id.action_reply:
+                mPictureIsForReply = true;
                 mImageDispatcherFragment.takePicture();
                 return true;
             case R.id.action_refresh:
@@ -188,7 +194,17 @@ public class ConversationListActivity
 
     @Override
     public void doUpload(String imagePath) {
-        mAuthorizationGetterFragment.withDefaultAuthorization(new DoUpload(imagePath));
+        if(mPictureIsForReply) {
+            mAuthorizationGetterFragment.withDefaultAuthorization(
+                    new ConversationDetailActivity.DoUpload(
+                            getFragmentManager().findFragmentById(R.id.conversation_detail_container)
+                                    .getArguments().getInt(ConversationDetailActivity.ARG_CONVERSATION_ID),
+                            imagePath
+                    )
+            );
+        } else {
+            mAuthorizationGetterFragment.withDefaultAuthorization(new DoUpload(imagePath));
+        }
     }
 
     @Subscribe
