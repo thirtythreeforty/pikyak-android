@@ -217,9 +217,7 @@ public class ConversationListActivity
     private void displayAlphaDialog() {
         final String welcomeScreenShownPref = "alphaDialogShown";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // second argument is the default to use if the preference can't be found
-        Boolean welcomeScreenShown = prefs.getBoolean(welcomeScreenShownPref, false);
+        boolean welcomeScreenShown = prefs.getBoolean(welcomeScreenShownPref, false);
 
         if (!welcomeScreenShown) {
             new Builder(this)
@@ -230,7 +228,7 @@ public class ConversationListActivity
                     .show();
             Editor editor = prefs.edit();
             editor.putBoolean(welcomeScreenShownPref, true);
-            editor.commit(); // Very important to save the preference
+            editor.apply();
         }
     }
 }
